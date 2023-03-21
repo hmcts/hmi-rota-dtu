@@ -1,6 +1,6 @@
 java:
   applicationPort: 3456
-  image: 'hmctspublic.azurecr.io/hmi/rota-dtu:latest'
+  image: 'sdshmctspublic.azurecr.io/hmi/rota-dtu:latest'
   ingressHost: hmi-rota-dtu-{{ .Values.global.environment }}.service.core-compute-{{ .Values.global.environment }}.internal
   aadIdentityName: hmi
 #  Uncomment once the vault containing the app insights key has been set up
