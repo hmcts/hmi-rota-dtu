@@ -132,7 +132,7 @@ def sonarExclusions = []
 
 sonarqube {
   properties {
-    property "sonar.projectName", "hmi-rota-dtu"
+    property "sonar.projectName", "Reform :: hmi-rota-dtu"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmi-rota-dtu"
   }
 }
