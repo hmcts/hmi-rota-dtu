@@ -134,7 +134,6 @@ sonarqube {
   properties {
     property "sonar.projectName", "hmi-rota-dtu"
     property "sonar.projectKey", "uk.gov.hmcts.reform:hmi-rota-dtu"
-    property "sonar.coverage.jacoco.xmlReportPaths", "${jacocoTestReport.reports.xml.destination.path}"
   }
 }
 
