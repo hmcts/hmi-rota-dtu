@@ -7,6 +7,6 @@ version: 0.0.4
 maintainers:
   - name: HMCTS HMI team
 dependencies:
-  - name: java
-    version: 4.0.13
+  - name: function
+    version: 2.3.4
     repository: 'https://hmctspublic.azurecr.io/helm/v1/repo/'
