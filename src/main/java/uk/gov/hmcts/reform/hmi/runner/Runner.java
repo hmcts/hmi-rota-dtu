@@ -11,12 +11,8 @@ import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 
-import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 @Service
@@ -42,7 +38,7 @@ public class Runner implements CommandLineRunner {
             BlobItem blob = blobToProcess.get();
 
             // Lease it for 60 seconds
-             BlobLeaseClient leaseClient = azureBlobService.acquireBlobLease(blob.getName());
+            BlobLeaseClient leaseClient = azureBlobService.acquireBlobLease(blob.getName());
             // Break the lease and copy blob for processing
             String newBlobName = azureBlobService.copyBlobForProcessing(blob.getName(), leaseClient.getLeaseId());
             azureBlobService.deleteBlob(blob.getName());
