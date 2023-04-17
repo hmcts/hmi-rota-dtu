@@ -10,12 +10,21 @@ import org.springframework.context.annotation.Profile;
 @Profile("!test & !functional")
 public class AzureBlobConfiguration {
 
-    @Bean
-    public BlobContainerClient blobContainerClient(AzureBlobConfigurationProperties
-                                                       azureBlobConfigurationProperties) {
+    @Bean(name = "rota")
+    public BlobContainerClient rotaBlobContainerClient(AzureBlobConfigurationProperties
+                                                               azureBlobConfigurationProperties) {
         return new BlobContainerClientBuilder()
             .connectionString(azureBlobConfigurationProperties.getConnectionString())
-            .containerName(azureBlobConfigurationProperties.getContainerName())
+            .containerName(azureBlobConfigurationProperties.getRotaContainerName())
+            .buildClient();
+    }
+
+    @Bean(name = "processing")
+    public BlobContainerClient processingBlobContainerClient(AzureBlobConfigurationProperties
+                                                                   azureBlobConfigurationProperties) {
+        return new BlobContainerClientBuilder()
+            .connectionString(azureBlobConfigurationProperties.getConnectionString())
+            .containerName(azureBlobConfigurationProperties.getProcessingContainerName())
             .buildClient();
     }
 

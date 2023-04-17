@@ -22,6 +22,7 @@ azure:
     instrumentation-key: ${hmi.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
   blob:
     connection-string: ${CONNECTION_STRING}
-    container-name: rota
+    rota-container-name: rota
+    processing-container-name: processing
 
 url: ${URL}

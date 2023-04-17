@@ -20,8 +20,13 @@ public class AzureBlobConfigurationProperties {
     private String connectionString;
 
     /**
-     * The name of the container to connect to.
+     * The name of the rota container to connect to.
      */
-    private String containerName;
+    private String rotaContainerName;
+
+    /**
+     * The name of the processing container to connect to.
+     */
+    private String processingContainerName;
 
 }

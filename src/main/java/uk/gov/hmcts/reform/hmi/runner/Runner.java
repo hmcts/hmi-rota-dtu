@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmi.runner;
 
-
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.LeaseStatusType;
 import com.azure.storage.blob.specialized.BlobLeaseClient;
@@ -36,16 +35,15 @@ public class Runner implements CommandLineRunner {
         // Can refactor don't need if
         if (blobToProcess.isPresent()) {
             BlobItem blob = blobToProcess.get();
-
             // Lease it for 60 seconds
             BlobLeaseClient leaseClient = azureBlobService.acquireBlobLease(blob.getName());
             // Break the lease and copy blob for processing
-            String newBlobName = azureBlobService.copyBlobForProcessing(blob.getName(), leaseClient.getLeaseId());
-            azureBlobService.deleteBlob(blob.getName());
+            azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseClient.getLeaseId());
+            // Delete the original blob
+            azureBlobService.deleteOriginalBlob(blob.getName());
             // Process the file (STUBS FOR NOW)
-            distributionService.sendBlobName(newBlobName);
-            // Delete the blob
-            azureBlobService.deleteBlob(newBlobName);
+            distributionService.sendBlobName(blob.getName());
+            azureBlobService.deleteProcessingBlob(blob.getName());
         }
     }
 }
