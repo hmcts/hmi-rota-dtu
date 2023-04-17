@@ -64,23 +64,6 @@ public class AzureBlobService {
         processingBlob.copyFromUrl(currentBlob.getBlobUrl());
     }
 
-    public String copyBlobForProcessing(String fileName, String leaseId) {
-        BlobClient currentBlob = rotaBlobContainerClient.getBlobClient(fileName);
-
-        // Create the lease client
-        BlobLeaseClient leaseClient = new BlobLeaseClientBuilder()
-            .blobClient(currentBlob)
-            .leaseId(leaseId)
-            .buildClient();
-
-        leaseClient.releaseLease();
-
-        BlobClient newBlob = rotaBlobContainerClient.getBlobClient("processing_" + fileName);
-
-
-        return "processing_" + fileName;
-    }
-
     public BlobLeaseClient acquireBlobLease(String fileName) {
         // Get the blob client
         BlobClient blob = rotaBlobContainerClient.getBlobClient(fileName);
