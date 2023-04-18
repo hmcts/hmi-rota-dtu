@@ -129,9 +129,7 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 project.tasks['check'].dependsOn integration
 
-def sonarExclusions = ["**/AzureBlobConfiguration.java", "**/AzureBlobConfigurationProperties.java",
-                       "**/WebClientConfiguration.java", "**/Runner.java", "**/AzureBlobService.java",
-                       "**/DistributionService.java", "**/Application.java"]
+def sonarExclusions = []
 
 sonarqube {
   properties {
@@ -204,7 +202,6 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  // Include Azure storage blob for storing application images
   implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.22.0'
 
   testImplementation(platform('org.junit:junit-bom:5.9.2'))

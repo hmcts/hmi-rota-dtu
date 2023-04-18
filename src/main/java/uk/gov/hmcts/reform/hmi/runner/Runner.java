@@ -33,6 +33,7 @@ public class Runner implements CommandLineRunner {
         Optional<BlobItem> blobToProcess =  listOfBlobs.stream().filter(isUnlocked).findFirst();
 
         // Can refactor don't need if
+        // Need to handle retry logic in here if we select a blob thats been taken
         if (blobToProcess.isPresent()) {
             BlobItem blob = blobToProcess.get();
             // Lease it for 60 seconds

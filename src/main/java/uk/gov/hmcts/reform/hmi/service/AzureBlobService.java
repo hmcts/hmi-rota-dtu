@@ -30,21 +30,11 @@ public class AzureBlobService {
         return blobs.stream().toList();
     }
 
-    /**
-     * Delete a blob from the blob store by the file name.
-     *
-     * @param fileName The file name of the blob to delete
-     */
     public void deleteOriginalBlob(String fileName) {
         BlobClient blobClient = rotaBlobContainerClient.getBlobClient(fileName);
         blobClient.delete();
     }
 
-    /**
-     * Delete a blob from the blob store by the file name.
-     *
-     * @param fileName The file name of the blob to delete
-     */
     public void deleteProcessingBlob(String fileName) {
         BlobClient blobClient = processingBlobContainerClient.getBlobClient(fileName);
         blobClient.delete();
@@ -54,7 +44,6 @@ public class AzureBlobService {
         BlobClient currentBlob = rotaBlobContainerClient.getBlobClient(fileName);
         BlobClient processingBlob = processingBlobContainerClient.getBlobClient(fileName);
 
-        // Create the lease client
         BlobLeaseClient leaseClient = new BlobLeaseClientBuilder()
             .blobClient(currentBlob)
             .leaseId(leaseId)
@@ -67,10 +56,7 @@ public class AzureBlobService {
     }
 
     public BlobLeaseClient acquireBlobLease(String fileName) {
-        // Get the blob client
         BlobClient blob = rotaBlobContainerClient.getBlobClient(fileName);
-
-        // Create the lease client
         BlobLeaseClient leaseClient = new BlobLeaseClientBuilder()
             .blobClient(blob)
             .buildClient();
