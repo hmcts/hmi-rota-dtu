@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
 
 @Service
@@ -61,7 +62,8 @@ public class AzureBlobService {
 
         leaseClient.releaseLease();
 
-        processingBlob.copyFromUrl(currentBlob.getBlobUrl());
+        byte[] currentBlobData = currentBlob.downloadContent().toBytes();
+        processingBlob.upload(new ByteArrayInputStream(currentBlobData), currentBlobData.length, true);
     }
 
     public BlobLeaseClient acquireBlobLease(String fileName) {
