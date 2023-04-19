@@ -2,7 +2,6 @@ package uk.gov.hmcts.reform.hmi.runner;
 
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.LeaseStatusType;
-import com.azure.storage.blob.specialized.BlobLeaseClient;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -37,9 +36,9 @@ public class Runner implements CommandLineRunner {
         if (blobToProcess.isPresent()) {
             BlobItem blob = blobToProcess.get();
             // Lease it for 60 seconds
-            BlobLeaseClient leaseClient = azureBlobService.acquireBlobLease(blob.getName());
+            String leaseId = azureBlobService.acquireBlobLease(blob.getName());
             // Break the lease and copy blob for processing
-            azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseClient.getLeaseId());
+            azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseId);
             // Delete the original blob
             azureBlobService.deleteOriginalBlob(blob.getName());
             // Process the file (STUBS FOR NOW)

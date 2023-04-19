@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @ExtendWith(MockitoExtension.class)
-class WebClientCreationTest {
+class WebClientConfigurationTest {
 
     @Test
     void createWebClientInsecure() {

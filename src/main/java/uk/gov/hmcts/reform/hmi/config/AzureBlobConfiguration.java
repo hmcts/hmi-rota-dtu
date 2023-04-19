@@ -27,5 +27,4 @@ public class AzureBlobConfiguration {
             .containerName(azureBlobConfigurationProperties.getProcessingContainerName())
             .buildClient();
     }
-
 }

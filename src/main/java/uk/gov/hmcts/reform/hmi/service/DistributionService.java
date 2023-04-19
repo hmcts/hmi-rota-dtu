@@ -12,11 +12,13 @@ import org.springframework.web.reactive.function.client.WebClientException;
 @Service
 public class DistributionService {
 
-    @Value("${url}")
-    private String url;
+    private final String url;
+    private final WebClient webClient;
 
-    @Autowired
-    WebClient webClient;
+    public DistributionService(@Autowired WebClient webClient,  @Value("${url}") String url) {
+        this.webClient = webClient;
+        this.url = url;
+    }
 
     public boolean sendBlobName(String blobName) {
         try {
