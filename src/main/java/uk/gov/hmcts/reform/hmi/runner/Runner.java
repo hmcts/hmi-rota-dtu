@@ -26,6 +26,7 @@ public class Runner implements CommandLineRunner {
     @Override
     public void run(String... args) {
         List<BlobItem> listOfBlobs = azureBlobService.getBlobs();
+        log.info("All blobs retrieved");
 
         // Select an unlocked blob
         Predicate<BlobItem> isUnlocked = blob -> blob.getProperties().getLeaseStatus().equals(LeaseStatusType.UNLOCKED);
@@ -34,6 +35,7 @@ public class Runner implements CommandLineRunner {
         // Can refactor don't need if
         // Need to handle retry logic in here if we select a blob thats been taken
         if (blobToProcess.isPresent()) {
+            log.info("Eligible blob selected to process");
             BlobItem blob = blobToProcess.get();
             // Lease it for 60 seconds
             String leaseId = azureBlobService.acquireBlobLease(blob.getName());
@@ -44,6 +46,7 @@ public class Runner implements CommandLineRunner {
             // Process the file (STUBS FOR NOW)
             distributionService.sendBlobName(blob.getName());
             azureBlobService.deleteProcessingBlob(blob.getName());
+            log.info("Blob processed, shutting down");
         }
     }
 }

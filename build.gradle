@@ -129,7 +129,8 @@ jacocoTestReport {
 project.tasks['sonarqube'].dependsOn jacocoTestReport
 project.tasks['check'].dependsOn integration
 
-def sonarExclusions = ["**/AzureBlobConfigurationProperties.java", "**/Application.java"]
+def sonarExclusions = ["**/AzureBlobConfigurationProperties.java", "**/Application.java",
+"**/AzureBlobConfiguration.java"]
 
 sonarqube {
   properties {
