@@ -25,5 +25,4 @@ withPipeline(type, product, component) {
   }
 
   enableSlackNotifications('#hmi-build-notices')
-  nonServiceApp()
 }
