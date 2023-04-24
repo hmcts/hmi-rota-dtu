@@ -16,6 +16,20 @@ spring:
     import: "optional:configtree:/mnt/secrets/hmi-kv/"
   application:
     name: HMI Rota DTU
+  cloud:
+    azure:
+      active-directory:
+        enabled: true
+        profile:
+          tenant-id: ${TENANT_ID}
+        credential:
+          client-id: ${CLIENT_ID}
+          client-secret: ${CLIENT_SECRET}
+        authorization-clients:
+          hmiApim:
+            authorization-grant-type: client_credentials
+            scopes:
+              - ${DATA_MANAGEMENT_AZ_API}/.default
 
 azure:
   application-insights:
@@ -25,4 +39,5 @@ azure:
     rota-container-name: rota
     processing-container-name: processing
 
-url: ${URL}
+service-to-service:
+  hmi-apim: ${HMI_APIM}

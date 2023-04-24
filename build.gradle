@@ -193,8 +193,11 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-json'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-webflux'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
 
-  implementation group: 'org.springdoc', name: 'springdoc-openapi-starter-webmvc-ui', version: '2.0.4'
+  implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.7.0'
 
   implementation group: 'com.github.hmcts.java-logging', name: 'logging', version: '6.0.1'
 
