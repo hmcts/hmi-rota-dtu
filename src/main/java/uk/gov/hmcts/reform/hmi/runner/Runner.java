@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
+import org.xml.sax.SAXException;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 import uk.gov.hmcts.reform.hmi.service.ProcessingService;
@@ -29,7 +30,7 @@ public class Runner implements CommandLineRunner {
     ProcessingService processingService;
 
     @Override
-    public void run(String... args) throws IOException {
+    public void run(String... args) throws IOException, SAXException {
         List<BlobItem> listOfBlobs = azureBlobService.getBlobs();
         log.info("All blobs retrieved");
 
