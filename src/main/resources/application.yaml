@@ -26,3 +26,6 @@ azure:
     processing-container-name: processing
 
 url: ${URL}
+
+validations:
+  rota-hmi-xsd: "schemas/rota-hmi-interface.xsd"

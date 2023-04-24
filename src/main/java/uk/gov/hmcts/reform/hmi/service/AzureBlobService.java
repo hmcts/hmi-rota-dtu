@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,5 +77,10 @@ public class AzureBlobService {
                 .blobClient(blobClient)
                 .buildClient();
         }
+    }
+
+    public InputStream downloadBlob(String fileName) {
+        BlobClient processingBlob = rotaBlobContainerClient.getBlobClient(fileName);
+        return processingBlob.downloadContent().toStream();
     }
 }

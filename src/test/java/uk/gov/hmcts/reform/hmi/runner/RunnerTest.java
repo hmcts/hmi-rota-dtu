@@ -12,6 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -53,6 +54,8 @@ class RunnerTest {
             assertTrue(logCaptor.getInfoLogs().size() == 1,
                        "More info logs than expected"
             );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -91,6 +94,8 @@ class RunnerTest {
             assertTrue(logCaptor.getInfoLogs().size() == 3,
                        "More info logs than expected"
             );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

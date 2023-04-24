@@ -8,7 +8,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
+import uk.gov.hmcts.reform.hmi.service.ProcessingService;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -23,8 +25,11 @@ public class Runner implements CommandLineRunner {
     @Autowired
     DistributionService distributionService;
 
+    @Autowired
+    ProcessingService processingService;
+
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws IOException {
         List<BlobItem> listOfBlobs = azureBlobService.getBlobs();
         log.info("All blobs retrieved");
 
@@ -37,10 +42,8 @@ public class Runner implements CommandLineRunner {
         if (blobToProcess.isPresent()) {
             log.info("Eligible blob selected to process");
             BlobItem blob = blobToProcess.get();
-            // Lease it for 60 seconds
-            String leaseId = azureBlobService.acquireBlobLease(blob.getName());
-            // Break the lease and copy blob for processing
-            azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseId);
+            //Process the selected blob
+            processingService.processFile(blob);
             // Delete the original blob
             azureBlobService.deleteOriginalBlob(blob.getName());
             // Process the file (STUBS FOR NOW)
