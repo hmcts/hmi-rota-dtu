@@ -20,6 +20,11 @@ public class ValidationService {
 
     private Validator initValidator(String xsdPath) throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        // to be compliant, completely disable DOCTYPE declaration:
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        // or prohibit the use of all protocols by external entities:
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         Source schemaFile = new StreamSource(getSchemaFile(xsdPath));
         Schema schema = factory.newSchema(schemaFile);
         return schema.newValidator();
