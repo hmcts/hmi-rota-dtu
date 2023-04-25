@@ -45,7 +45,7 @@ class ValidationServiceTest {
             assertFalse(validationService.isValid(ROTA_XML_SCHEMA, rotaXmlAsByte),
                        EXPECTED_MESSAGE);
             assertTrue(logCaptor.getErrorLogs().get(0).contains("Failed to validate the schema with error message"),
-                       "Info log did not contain message");
+                       "Error log did not contain message");
         }
     }
 }
