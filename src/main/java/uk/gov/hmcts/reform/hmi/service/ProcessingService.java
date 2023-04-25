@@ -1,6 +1,5 @@
 package uk.gov.hmcts.reform.hmi.service;
 
-import com.azure.core.exception.AzureException;
 import com.azure.storage.blob.models.BlobItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
