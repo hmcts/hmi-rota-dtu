@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           targetNamespace="http://com.moj.mcr.rota/v1/"
+           xmlns="http://com.moj.mcr.rota/v1/"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:annotation>
+        <xs:appinfo>Rota Interface Data</xs:appinfo>
+        <xs:documentation xml:lang="en">
+            All messages will use 'rotaSchedule' as root element.
+        </xs:documentation>
+    </xs:annotation>
+    <xs:element type="RotaScheduleType" name="rotaSchedule"/>
+    <xs:complexType name="RotaScheduleType">
+        <xs:sequence>
+            <xs:element type="RotaPeriodType" name="rotaPeriod"/>
+            <xs:element type="MagistratesType" name="magistrates"/>
+            <xs:element type="DistrictJudgesType" name="districtJudges" minOccurs="0"/>
+            <xs:element type="LocationsType" name="locations" minOccurs="0"/>
+            <xs:element type="VenuesType" name="venues" minOccurs="0"/>
+            <xs:element type="CourtListingProfilesType" name="courtListingProfiles"/>
+            <xs:element type="SchedulesType" name="schedules"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="RotaPeriodType">
+        <xs:sequence>
+            <xs:element type="JusticeAreaTypeType" name="justiceAreaType"/>
+            <xs:element type="xs:string" name="justiceAreaName"/>
+            <xs:element type="xs:date" name="startDate"/>
+            <xs:element type="xs:date" name="endDate"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="MagistratesType">
+        <xs:sequence>
+            <xs:element type="MagistrateType" name="magistrate" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="DistrictJudgesType">
+        <xs:sequence>
+            <xs:element type="DistrictJudgeType" name="districtJudge" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="JusticeType">
+        <xs:sequence>
+            <xs:element type="xs:string" name="title"/>
+            <xs:element type="xs:string" name="surname"/>
+            <xs:element type="xs:string" name="forenames"/>
+            <xs:element type="xs:string" name="emailAddress"/>
+        </xs:sequence>
+        <xs:attribute type="xs:ID" name="id" use="required"/>
+    </xs:complexType>
+    <xs:complexType name="MagistrateType">
+        <xs:complexContent>
+            <xs:extension base="JusticeType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="DistrictJudgeType">
+        <xs:complexContent>
+            <xs:extension base="JusticeType"/>
+        </xs:complexContent>
+    </xs:complexType>
+    <xs:complexType name="CourtListingProfilesType">
+        <xs:sequence>
+            <xs:element type="CourtListingProfileType" name="courtListingProfile" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="CourtListingProfileType">
+        <xs:sequence>
+            <xs:element type="xs:date" name="sessionDate"/>
+            <xs:element type="SessionType" name="session"/>
+            <xs:element type="PanelType" name="panel"/>
+            <xs:element type="BusinessType" name="business"/>
+            <xs:element type="xs:int" name="venueId"/>
+            <xs:element type="xs:int" name="locationId"/>
+            <xs:element type="xs:boolean" name="welshSpeaking"/>
+            <xs:element type="xs:dateTime" name="updatedDate"/>
+        </xs:sequence>
+        <xs:attribute type="xs:ID" name="id" use="required"/>
+        <xs:attribute type="xs:string" name="linkedSessionId" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="LocationsType">
+        <xs:sequence>
+            <xs:element type="LocationType" name="location" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="LocationType">
+        <xs:sequence>
+            <xs:element type="xs:int" name="locationId"/>
+            <xs:element type="xs:string" name="name"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="VenuesType">
+        <xs:sequence>
+            <xs:element type="VenueType" name="venue" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="VenueType">
+        <xs:sequence>
+            <xs:element type="xs:int" name="venueId"/>
+            <xs:element type="xs:string" name="name"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="SchedulesType">
+        <xs:sequence>
+            <xs:element type="ScheduleType" name="schedule" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="ScheduleType">
+        <xs:sequence>
+            <xs:element name="courtListingProfile">
+                <xs:complexType>
+                    <xs:attribute name="idref" type="xs:IDREF" use="required"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="justice" minOccurs="0">
+                <xs:complexType>
+                    <xs:attribute name="idref" type="xs:IDREF" use="optional"/>
+                </xs:complexType>
+            </xs:element>
+            <xs:element type="SlotType" name="slot"/>
+        </xs:sequence>
+        <xs:attribute type="xs:ID" name="id" use="required"/>
+    </xs:complexType>
+    <xs:simpleType name="SessionType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="AM"/>
+            <xs:enumeration value="PM"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="PanelType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="ADULT"/>
+            <xs:enumeration value="YOUTH"/>
+            <xs:enumeration value="FAMILY"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="BusinessType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="BAIL"/>
+            <xs:enumeration value="CUST"/>
+            <xs:enumeration value="GEN"/>
+            <xs:enumeration value="PSR"/>
+            <xs:enumeration value="VLT"/>
+            <xs:enumeration value="VTR"/>
+            <xs:enumeration value="TRL"/>
+            <xs:enumeration value="APP"/>
+            <xs:enumeration value="BRE"/>
+            <xs:enumeration value="CJU"/>
+            <xs:enumeration value="CRC"/>
+            <xs:enumeration value="COU"/>
+            <xs:enumeration value="DRR"/>
+            <xs:enumeration value="DAR"/>
+            <xs:enumeration value="DVB"/>
+            <xs:enumeration value="DVP"/>
+            <xs:enumeration value="DVT"/>
+            <xs:enumeration value="ENF"/>
+            <xs:enumeration value="EXT"/>
+            <xs:enumeration value="GPO"/>
+            <xs:enumeration value="GW1"/>
+            <xs:enumeration value="G1T"/>
+            <xs:enumeration value="GW2"/>
+            <xs:enumeration value="G2T"/>
+            <xs:enumeration value="IJ"/>
+            <xs:enumeration value="IJH"/>
+            <xs:enumeration value="IJV"/>
+            <xs:enumeration value="LAE"/>
+            <xs:enumeration value="LIC"/>
+            <xs:enumeration value="MPO"/>
+            <xs:enumeration value="NPO"/>
+            <xs:enumeration value="NCPG"/>
+            <xs:enumeration value="NCPT"/>
+            <xs:enumeration value="PSV"/>
+            <xs:enumeration value="PIA"/>
+            <xs:enumeration value="POCA"/>
+            <xs:enumeration value="RC"/>
+            <xs:enumeration value="TER"/>
+            <xs:enumeration value="TRF"/>
+            <xs:enumeration value="TRT"/>
+            <xs:enumeration value="VIR"/>
+            <xs:enumeration value="PSR"/>
+            <xs:enumeration value="FPU"/>
+            <xs:enumeration value="FPR"/>
+            <xs:enumeration value="MEN"/>
+            <xs:enumeration value="MXD"/>
+            <xs:enumeration value="CJSSS"/>
+            <xs:enumeration value="REM"/>
+            <xs:enumeration value="TFL"/>
+            <xs:enumeration value="TPA"/>
+            <xs:enumeration value="TVLO"/>
+            <xs:enumeration value="EFH"/>
+            <xs:enumeration value="VEX"/>
+            <xs:enumeration value="TRPA"/>
+            <xs:enumeration value="LA"/>
+            <xs:enumeration value="NGAP"/>
+            <xs:enumeration value="GAP"/>
+            <xs:enumeration value="DVLA"/>     
+            <xs:enumeration value="CON"/>       
+            <xs:enumeration value="OOHSW"/>
+            <xs:enumeration value="IHSW"/>
+            <xs:enumeration value="SJP31"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="SlotType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="CHAIR"/>
+            <xs:enumeration value="LEFT_WINGER"/>
+            <xs:enumeration value="RIGHT_WINGER"/>
+            <xs:enumeration value="SINGLE_JUSTICE"/>
+            <xs:enumeration value="CROWN_1"/>
+            <xs:enumeration value="CROWN_2"/>
+            <xs:enumeration value="DISTRICT_JUDGE"/>
+        </xs:restriction>
+    </xs:simpleType>
+    <xs:simpleType name="JusticeAreaTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="LJA"/>
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

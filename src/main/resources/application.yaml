@@ -23,10 +23,13 @@ spring:
 
 azure:
   application-insights:
-    instrumentation-key: ${hmi.AppInsightsInstrumentationKey:00000000-0000-0000-0000-000000000000}
+    instrumentation-key: ${AZURE_APPLICATIONINSIGHTS_INSTRUMENTATIONKEY:00000000-0000-0000-0000-000000000000}
   blob:
     connection-string: ${CONNECTION_STRING}
     rota-container-name: rota
     processing-container-name: processing
 
 url: ${URL}
+
+validations:
+  rota-hmi-xsd: "schemas/rota-hmi-interface.xsd"
