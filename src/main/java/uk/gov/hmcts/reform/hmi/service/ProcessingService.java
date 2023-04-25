@@ -55,15 +55,10 @@ public class ProcessingService {
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {
-        try {
-            // Lease it for 60 seconds
-            String leaseId = azureBlobService.acquireBlobLease(blob.getName());
+        // Lease it for 60 seconds
+        String leaseId = azureBlobService.acquireBlobLease(blob.getName());
 
-            // Break the lease and copy blob for processing
-            azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseId);
-        } catch (AzureException ex) {
-            log.error(String.format("Failed to move the blob %s to processing container with error message: %s",
-                                    blob.getName(), ex.getMessage()));
-        }
+        // Break the lease and copy blob for processing
+        azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseId);
     }
 }
