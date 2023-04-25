@@ -5,6 +5,7 @@ import com.azure.storage.blob.models.BlobItem;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
+import uk.gov.hmcts.reform.hmi.config.ValidationConfiguration;
 
 import java.io.IOException;
 
@@ -18,11 +19,14 @@ public class ProcessingService {
 
     private final ConversionService conversionService;
 
+    private final ValidationConfiguration validationConfiguration;
+
     public ProcessingService(ValidationService validationService, AzureBlobService azureBlobService,
-                             ConversionService conversionService) {
+                             ConversionService conversionService, ValidationConfiguration validationConfiguration) {
         this.validationService = validationService;
         this.azureBlobService = azureBlobService;
         this.conversionService = conversionService;
+        this.validationConfiguration = validationConfiguration;
     }
 
     public boolean processFile(BlobItem blob) throws IOException, SAXException {
@@ -35,7 +39,7 @@ public class ProcessingService {
         log.info(String.format("Download blob %s", blob.getName()));
 
         //VALIDATE XML FILE AGAINST SCHEMA FILE PROVIDED BY ROTA
-        boolean isFileValid = validationService.isValid(blobData);
+        boolean isFileValid = validationService.isValid(validationConfiguration.getRotaHmiXsd(), blobData);
 
         log.info(String.format("Blob %s validation: %s", blob.getName(), isFileValid));
 
