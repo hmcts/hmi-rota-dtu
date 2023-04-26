@@ -3,7 +3,6 @@ package uk.gov.hmcts.reform.hmi.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
-import uk.gov.hmcts.reform.hmi.config.ValidationConfiguration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -19,33 +18,32 @@ import javax.xml.validation.Validator;
 @Service
 public class ValidationService {
 
-    private final ValidationConfiguration validationConfiguration;
-
-    public ValidationService(ValidationConfiguration validationConfiguration) {
-        this.validationConfiguration = validationConfiguration;
-    }
-
-    private Validator initValidator() throws SAXException {
+    private Validator initValidator(String xsdPath) throws SAXException {
         SchemaFactory factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-        Source schemaFile = new StreamSource(getSchemaFile());
+        // to be compliant, completely disable DOCTYPE declaration:
+        factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        // or prohibit the use of all protocols by external entities:
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        factory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+        Source schemaFile = new StreamSource(getSchemaFile(xsdPath));
         Schema schema = factory.newSchema(schemaFile);
         return schema.newValidator();
     }
 
-    public boolean isValid(byte[] rotaXml) throws SAXException {
-        Validator validator = initValidator();
+    public boolean isValid(String xsdPath, byte[] rotaXml) throws IOException, SAXException {
+        Validator validator = initValidator(xsdPath);
         try {
             validator.validate(new StreamSource(new ByteArrayInputStream(rotaXml)));
             return true;
-        } catch (SAXException | IOException ex) {
+        } catch (SAXException ex) {
             log.error(String.format("Failed to validate the schema with error message: %s", ex.getMessage()));
             return false;
         }
     }
 
-    private File getSchemaFile() {
+    private File getSchemaFile(String location) {
         return new File(Thread.currentThread().getContextClassLoader()
-                            .getResource(validationConfiguration.getRotaHmiXsd())
+                            .getResource(location)
                             .getFile());
     }
 }
