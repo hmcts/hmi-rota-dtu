@@ -2,13 +2,17 @@ package uk.gov.hmcts.reform.hmi.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Class that represents a schedule.
  */
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Schedule {
 
     /**

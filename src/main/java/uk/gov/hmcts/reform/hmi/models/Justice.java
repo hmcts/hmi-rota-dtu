@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmi.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -35,5 +36,6 @@ public class Justice {
     /**
      * The email of the Magistrate or District Judge.
      */
+    @JsonProperty("emailAddress")
     private String email;
 }

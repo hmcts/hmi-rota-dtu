@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmi.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -23,6 +26,7 @@ public class CourtListingProfile {
     /**
      * The date of the session.
      */
+    @JsonDeserialize(using = LocalDateDeserializer.class)
     private LocalDate sessionDate;
 
     /**
@@ -53,5 +57,16 @@ public class CourtListingProfile {
     /**
      * The last updated date of the court listing profile.
      */
-    private LocalDateTime lastUpdated;
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    private LocalDateTime updatedDate;
+
+    /**
+     * The id of the linked session.
+     */
+    private String linkedSessionId;
+
+    /**
+     * The id of the venue.
+     */
+    private String venueId;
 }

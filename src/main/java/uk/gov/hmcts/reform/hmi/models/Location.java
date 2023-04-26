@@ -1,5 +1,6 @@
 package uk.gov.hmcts.reform.hmi.models;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import lombok.Data;
@@ -15,6 +16,7 @@ public class Location {
      * The id of the location.
      */
     @Id
+    @JsonProperty("locationId")
     private Integer id;
 
     /**
