@@ -48,7 +48,8 @@ public class ProcessingService {
     ObjectMapper mapper = new ObjectMapper();
 
     public ProcessingService(ValidationService validationService, AzureBlobService azureBlobService,
-                             ConversionService conversionService, JusticeRepository justiceRepository,
+                             ConversionService conversionService, ValidationConfiguration validationConfiguration,
+                             JusticeRepository justiceRepository,
                              LocationRepository locationRepository, VenueRepository venueRepository,
                              CourtListingProfileRepository courtListingProfileRepository,
                              ScheduleRepository scheduleRepository) {
