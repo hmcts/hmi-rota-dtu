@@ -81,6 +81,7 @@ public class ProcessingService {
             //CONVERT XML TO JSON
             JsonNode json = conversionService.convertXmlToJson(blobData);
             processJsonInToDatabase(json);
+            conversionService.createRequestJson();
         } else {
             //RAISE SERVICE NOW REQUEST
             return false;
