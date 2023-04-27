@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
-
+import uk.gov.hmcts.reform.hmi.config.ValidationConfiguration;
 import uk.gov.hmcts.reform.hmi.database.CourtListingProfileRepository;
 import uk.gov.hmcts.reform.hmi.database.JusticeRepository;
 import uk.gov.hmcts.reform.hmi.database.LocationRepository;
@@ -17,7 +17,6 @@ import uk.gov.hmcts.reform.hmi.models.Justice;
 import uk.gov.hmcts.reform.hmi.models.Location;
 import uk.gov.hmcts.reform.hmi.models.Schedule;
 import uk.gov.hmcts.reform.hmi.models.Venue;
-import uk.gov.hmcts.reform.hmi.config.ValidationConfiguration;
 
 import java.io.IOException;
 import java.util.ArrayList;
