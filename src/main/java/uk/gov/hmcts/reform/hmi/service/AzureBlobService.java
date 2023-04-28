@@ -77,4 +77,9 @@ public class AzureBlobService {
                 .buildClient();
         }
     }
+
+    public byte[] downloadBlob(String fileName) {
+        BlobClient processingBlob = processingBlobContainerClient.getBlobClient(fileName);
+        return processingBlob.downloadContent().toBytes();
+    }
 }

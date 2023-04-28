@@ -9,13 +9,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.xml.sax.SAXException;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
+import uk.gov.hmcts.reform.hmi.service.ProcessingService;
 
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,6 +29,9 @@ class RunnerTest {
     @Mock
     DistributionService distributionService;
 
+    @Mock
+    ProcessingService processingService;
+
     @InjectMocks
     Runner runner;
 
@@ -34,7 +39,7 @@ class RunnerTest {
     private static final String RESPONSE_MESSAGE = "Info logs did not contain expected message";
 
     @Test
-    void testRunnerWithNoEligibleBlobToProcess() {
+    void testRunnerWithNoEligibleBlobToProcess() throws IOException, SAXException {
         try (LogCaptor logCaptor = LogCaptor.forClass(Runner.class)) {
             BlobItem blobItem = new BlobItem();
             blobItem.setName(TEST);
@@ -57,7 +62,7 @@ class RunnerTest {
     }
 
     @Test
-    void testRunnerWithEligibleBlobToProcess() {
+    void testRunnerWithEligibleBlobToProcess() throws IOException, SAXException {
         try (LogCaptor logCaptor = LogCaptor.forClass(Runner.class)) {
             BlobItem blobItem = new BlobItem();
             blobItem.setName(TEST);
@@ -65,8 +70,7 @@ class RunnerTest {
             blobItemProperties.setLeaseStatus(LeaseStatusType.UNLOCKED);
             blobItem.setProperties(blobItemProperties);
             when(azureBlobService.getBlobs()).thenReturn(List.of(blobItem));
-            when(azureBlobService.acquireBlobLease(TEST)).thenReturn("1234");
-            doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, "1234");
+            when(processingService.processFile(blobItem)).thenReturn(true);
             when(azureBlobService.deleteOriginalBlob(TEST)).thenReturn("fileDeleted");
             when(distributionService.sendBlobName(TEST)).thenReturn(true);
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
@@ -93,5 +97,4 @@ class RunnerTest {
             );
         }
     }
-
 }

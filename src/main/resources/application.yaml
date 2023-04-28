@@ -30,6 +30,10 @@ spring:
             authorization-grant-type: client_credentials
             scopes:
               - ${DATA_MANAGEMENT_AZ_API}/.default
+  datasource:
+    driverClassName: org.h2.Driver
+    jpa:
+      spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
 
 azure:
   application-insights:
@@ -41,3 +45,6 @@ azure:
 
 service-to-service:
   hmi-apim: ${HMI_APIM}
+
+validations:
+  rota-hmi-xsd: "schemas/rota-hmi-interface.xsd"

@@ -130,7 +130,8 @@ project.tasks['sonarqube'].dependsOn jacocoTestReport
 project.tasks['check'].dependsOn integration
 
 def sonarExclusions = ["**/AzureBlobConfigurationProperties.java", "**/Application.java",
-"**/AzureBlobConfiguration.java"]
+"**/AzureBlobConfiguration.java", "**/ValidationConfiguration.java", "**/CourtListingProfile.java",
+"**/Justice.java", "**/Location.java", "**/Schedule.java", "**/Venue.java"]
 
 sonarqube {
   properties {
@@ -196,6 +197,9 @@ dependencies {
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-security'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-client'
   implementation group: 'org.springframework.boot', name: 'spring-boot-starter-oauth2-resource-server'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa'
+  implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
+  runtimeOnly group: 'com.h2database', name: 'h2'
 
   implementation group: 'com.azure.spring', name: 'spring-cloud-azure-starter-active-directory', version: '4.7.0'
 
@@ -207,6 +211,8 @@ dependencies {
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
   implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.22.0'
+
+  implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
   testImplementation(platform('org.junit:junit-bom:5.9.2'))
   testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
