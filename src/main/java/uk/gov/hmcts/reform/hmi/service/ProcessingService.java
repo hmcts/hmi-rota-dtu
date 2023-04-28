@@ -1,6 +1,8 @@
 package uk.gov.hmcts.reform.hmi.service;
 
 import com.azure.storage.blob.models.BlobItem;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -44,7 +46,11 @@ public class ProcessingService {
 
     private final ScheduleRepository scheduleRepository;
 
-    ObjectMapper mapper = new ObjectMapper();
+    private static final String EXCEPTION_MESSAGE = "Issue processing json into the database";
+
+    ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
+                                                       true);
+
 
     public ProcessingService(ValidationService validationService, AzureBlobService azureBlobService,
                              ConversionService conversionService, ValidationConfiguration validationConfiguration,
@@ -80,7 +86,12 @@ public class ProcessingService {
         if (isFileValid) {
             //CONVERT XML TO JSON
             JsonNode json = conversionService.convertXmlToJson(blobData);
-            processJsonInToDatabase(json);
+            handleJusticesToModel(json.get("magistrates").get("magistrate"),
+                                  json.get("districtJudges").get("districtJudge"));
+            handleLocationsToModel(json.get("locations").get("location"));
+            handleVenuesToModel(json.get("venues").get("venue"));
+            handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
+            handleSchedulesToModel(json.get("schedules").get("schedule"));
             conversionService.createRequestJson();
         } else {
             //RAISE SERVICE NOW REQUEST
@@ -90,44 +101,100 @@ public class ProcessingService {
         return true;
     }
 
-    private void processJsonInToDatabase(JsonNode json) {
+    /**
+     * Take in the magistrates and districtJudge json nodes, convert to a model and store in the database.
+     * @param magistrates The magistrates jsonNode.
+     * @param districtJudges The district judge jsonNode.
+     */
+    private void handleJusticesToModel(JsonNode magistrates, JsonNode districtJudges) {
         List<Justice> justices = new ArrayList<>();
-        List<Location> locations = new ArrayList<>();
-        List<Venue> venues = new ArrayList<>();
-        List<CourtListingProfile> courtListingProfiles = new ArrayList<>();
-        List<Schedule> schedules = new ArrayList<>();
-
-        // Convert jsonNodes into models and add to lists
-        json.get("magistrates").get("magistrate").forEach(magistrate ->
-            justices.add(mapper.convertValue(magistrate, Justice.class)));
-        json.get("districtJudges").get("districtJudge").forEach(districtJudge ->
-            justices.add(mapper.convertValue(districtJudge, Justice.class)));
-
-        json.get("locations").get("location").forEach(location ->
-            locations.add(mapper.convertValue(location, Location.class)));
-
-        json.get("venues").get("venue").forEach(venue ->
-            venues.add(mapper.convertValue(venue, Venue.class)));
-
-        json.get("courtListingProfiles").get("courtListingProfile").forEach(courtListingProfile ->
-            courtListingProfiles.add(mapper.convertValue(courtListingProfile, CourtListingProfile.class)));
-
-        json.get("schedules").get("schedule").forEach(schedule -> {
-            schedules.add(new Schedule(
-                schedule.get("id").asText(),
-                schedule.get("courtListingProfile").get("idref").asText(),
-                schedule.get("justice").get("idref").asText(),
-                schedule.get("slot").asText()
-            ));
+        magistrates.forEach(magistrate -> {
+            try {
+                justices.add(mapper.treeToValue(magistrate, Justice.class));
+            } catch (JsonProcessingException ex) {
+                // TODO Raise incident in snow
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
         });
 
-
-        // Save all data
+        districtJudges.forEach(districtJudge -> {
+            try {
+                justices.add(mapper.treeToValue(districtJudge, Justice.class));
+            } catch (JsonProcessingException ex) {
+                // TODO Raise incident in snow
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
+        });
         justiceRepository.saveAll(justices);
-        locationRepository.saveAll(locations);
-        venueRepository.saveAll(venues);
-        courtListingProfileRepository.saveAll(courtListingProfiles);
-        scheduleRepository.saveAll(schedules);
+    }
+
+    /**
+     * Take in the location json node, convert to a model and store in the database.
+     * @param locations The locations jsonNode.
+     */
+    private void handleLocationsToModel(JsonNode locations) {
+        List<Location> locationsList = new ArrayList<>();
+        locations.forEach(location -> {
+            try {
+                locationsList.add(mapper.treeToValue(location, Location.class));
+            } catch (JsonProcessingException ex) {
+                // TODO Raise incident in snow
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
+        });
+        locationRepository.saveAll(locationsList);
+    }
+
+    /**
+     * Take in the venue json node, convert to a model and store in the database.
+     * @param venues The venues jsonNode.
+     */
+    private void handleVenuesToModel(JsonNode venues) {
+        List<Venue> venuesList = new ArrayList<>();
+        venues.forEach(venue -> {
+            try {
+                venuesList.add(mapper.treeToValue(venue, Venue.class));
+            } catch (JsonProcessingException ex) {
+                // TODO Raise incident in snow
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
+        });
+        venueRepository.saveAll(venuesList);
+    }
+
+    /**
+     * Take in the court listing profile json node, convert to a model and store in the database.
+     * @param courtListingProfiles The court listing profile jsonNode.
+     */
+    private void handleCourtListingProfilesToModel(JsonNode courtListingProfiles) {
+        List<CourtListingProfile> courtListingProfileList = new ArrayList<>();
+        courtListingProfiles.forEach(courtListingProfile -> {
+            try {
+                courtListingProfileList.add(mapper.treeToValue(courtListingProfile,
+                    CourtListingProfile.class));
+            } catch (JsonProcessingException ex) {
+                // TODO Raise incident in snow
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
+        });
+        courtListingProfileRepository.saveAll(courtListingProfileList);
+    }
+
+    /**
+     * Take in the schedules json node, convert to a model and store in the database.
+     * @param schedules The schedules jsonNode.
+     */
+    private void handleSchedulesToModel(JsonNode schedules) {
+        List<Schedule> scheduleList = new ArrayList<>();
+        schedules.forEach(schedule -> {
+            scheduleList.add(new Schedule(
+                schedule.get("id").textValue(),
+                schedule.get("courtListingProfile").get("idref").textValue(),
+                schedule.get("justice").get("idref").textValue(),
+                schedule.get("slot").textValue()
+            ));
+            scheduleRepository.saveAll(scheduleList);
+        });
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {
