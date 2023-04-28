@@ -23,7 +23,7 @@ public class Judge {
     /**
      * If Slot is chair, isPresiding will be TRUE, else FALSE.
      */
-    @JsonProperty
+    @JsonProperty("isPresiding")
     private boolean isPresiding;
 
     public Judge(String johId, String slot) {

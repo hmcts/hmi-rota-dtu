@@ -197,8 +197,8 @@ public class ProcessingService {
                 schedule.get("justice").get("idref").textValue(),
                 schedule.get("slot").textValue()
             ));
-            scheduleRepository.saveAll(scheduleList);
         });
+        scheduleRepository.saveAll(scheduleList);
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {
