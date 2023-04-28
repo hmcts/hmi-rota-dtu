@@ -85,13 +85,8 @@ public class ProcessingService {
 
         if (isFileValid) {
             //CONVERT XML TO JSON
-            JsonNode json = conversionService.convertXmlToJson(blobData);
-            handleJusticesToModel(json.get("magistrates").get("magistrate"),
-                                  json.get("districtJudges").get("districtJudge"));
-            handleLocationsToModel(json.get("locations").get("location"));
-            handleVenuesToModel(json.get("venues").get("venue"));
-            handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
-            handleSchedulesToModel(json.get("schedules").get("schedule"));
+            JsonNode rotaJson = conversionService.convertXmlToJson(blobData);
+            saveRotaJsonIntoDatabase(rotaJson);
             conversionService.createRequestJson();
         } else {
             //RAISE SERVICE NOW REQUEST
@@ -99,6 +94,15 @@ public class ProcessingService {
         }
 
         return true;
+    }
+
+    private void saveRotaJsonIntoDatabase(JsonNode json) {
+        handleJusticesToModel(json.get("magistrates").get("magistrate"),
+                              json.get("districtJudges").get("districtJudge"));
+        handleLocationsToModel(json.get("locations").get("location"));
+        handleVenuesToModel(json.get("venues").get("venue"));
+        handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
+        handleSchedulesToModel(json.get("schedules").get("schedule"));
     }
 
     /**
@@ -193,8 +197,8 @@ public class ProcessingService {
                 schedule.get("justice").get("idref").textValue(),
                 schedule.get("slot").textValue()
             ));
-            scheduleRepository.saveAll(scheduleList);
         });
+        scheduleRepository.saveAll(scheduleList);
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {

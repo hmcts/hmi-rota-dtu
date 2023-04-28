@@ -11,16 +11,20 @@ import java.util.List;
 @Getter
 @Setter
 public class Session {
+
     private List<Judge> johs = new ArrayList<>();
     private Location room;
+
     /**
      * If Session in CLP table is AM, duration will be 180, otherwise 120.
      */
     private Integer sessionDuration;
+
     /**
-     * ID from the CLP table
+     * ID from the CLP table.
      */
     private String sessionReference;
+
     /**
      * If Session in CLP table is AM, sessionStart time will be 10:00, otherwise 14:00.
      */

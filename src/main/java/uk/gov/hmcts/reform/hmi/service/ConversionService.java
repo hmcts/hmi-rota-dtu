@@ -35,6 +35,8 @@ public class ConversionService {
 
     private final CourtListingProfileRepository courtListingProfileRepository;
 
+    private static final String EXCEPTION_MESSAGE = "Issue converting model to json";
+
     public ConversionService(ScheduleRepository scheduleRepository, JusticeRepository justiceRepository,
                              CourtListingProfileRepository courtListingProfileRepository) {
         this.scheduleRepository = scheduleRepository;
@@ -66,8 +68,8 @@ public class ConversionService {
                     Map<String, String> request = new ConcurrentHashMap<>();
                     request.put(clpId, json);
                     requestsJson.add(request);
-                } catch (JsonProcessingException e) {
-                    throw new RuntimeException(e);
+                } catch (JsonProcessingException ex) {
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
         }
@@ -113,7 +115,7 @@ public class ConversionService {
     }
 
     private Integer calculateSessionDuration(CourtListingProfile courtListingProfile) {
-        if (courtListingProfile.getSession().equals("AM")) {
+        if ("AM".equals(courtListingProfile.getSession())) {
             return 180;
         }
 
@@ -121,7 +123,7 @@ public class ConversionService {
     }
 
     private String calculateSessionStartTime(CourtListingProfile courtListingProfile) {
-        if (courtListingProfile.getSession().equals("AM")) {
+        if ("AM".equals(courtListingProfile.getSession())) {
             return courtListingProfile.getSessionDate().toString() + "T10:00:00Z";
         }
 

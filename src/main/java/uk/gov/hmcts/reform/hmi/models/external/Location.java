@@ -8,18 +8,20 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Location {
+
     /**
-     * If LocationType is Room, locationId will come from CLP table (venueId)
-     * If LocationType is Court, locationId will come from CLP table (locationId)
+     * If LocationType is Room, locationId will come from CLP table (venueId).
+     * If LocationType is Court, locationId will come from CLP table (locationId).
      */
     private String locationId;
+
     /**
-     * This will be ROTA
+     * This will be ROTA.
      */
     private String locationReferenceId;
 
     /**
-     * LocationType can be Room or Court
+     * LocationType can be Room or Court.
      */
     private String locationType;
 
