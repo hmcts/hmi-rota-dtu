@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface ScheduleRepository extends JpaRepository<Schedule, String> {
     Optional<List<Schedule>> findByCourtListingProfileId(String courtListingProfileId);
+
     @Query(value = "select distinct COURT_LISTING_PROFILE_ID "
         + "from SCHEDULE",
           nativeQuery = true)

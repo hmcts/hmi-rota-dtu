@@ -8,5 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface JusticeRepository extends JpaRepository<Justice, String> {
+    @Override
     Optional<Justice> findById(String id);
 }
