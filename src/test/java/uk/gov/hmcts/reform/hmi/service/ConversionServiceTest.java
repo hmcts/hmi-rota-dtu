@@ -35,7 +35,7 @@ class ConversionServiceTest {
             JsonNode dataAsJson = conversionService.convertXmlToJson(rotaXmlAsByte);
             assertEquals(
                 "CS4035951_LEFT_WINGER",
-                dataAsJson.get("schedules").get("schedule").get("id").asText(), EXPECTED_MESSAGE);
+                dataAsJson.get("schedules").get("schedule").get(0).get("id").asText(), EXPECTED_MESSAGE);
         }
     }
 
