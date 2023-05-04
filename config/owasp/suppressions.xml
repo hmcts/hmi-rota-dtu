@@ -30,5 +30,8 @@
   <suppress>
     <cve>CVE-2022-45868</cve>
   </suppress>
+  <suppress>
+    <cve>CVE-2021-42306</cve>
+  </suppress>
   <!--End of temporary suppression section -->
 </suppressions>
