@@ -22,7 +22,9 @@ import uk.gov.hmcts.reform.hmi.models.Venue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -69,7 +71,7 @@ public class ProcessingService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public boolean processFile(BlobItem blob) throws IOException, SAXException {
+    public Map<String, String> processFile(BlobItem blob) throws IOException, SAXException {
 
         //MOVE FILE TO PROCESSING CONTAINER
         moveFileToProcessingContainer(blob);
@@ -84,16 +86,13 @@ public class ProcessingService {
         log.info(String.format("Blob %s validation: %s", blob.getName(), isFileValid));
 
         if (isFileValid) {
-            //CONVERT XML TO JSON
             JsonNode rotaJson = conversionService.convertXmlToJson(blobData);
             saveRotaJsonIntoDatabase(rotaJson);
-            conversionService.createRequestJson();
+            return conversionService.createRequestJson();
         } else {
-            //RAISE SERVICE NOW REQUEST
-            return false;
+            log.error("Raise snow request TODO");
+            return Collections.emptyMap();
         }
-
-        return true;
     }
 
     private void saveRotaJsonIntoDatabase(JsonNode json) {
@@ -112,23 +111,27 @@ public class ProcessingService {
      */
     private void handleJusticesToModel(JsonNode magistrates, JsonNode districtJudges) {
         List<Justice> justices = new ArrayList<>();
-        magistrates.forEach(magistrate -> {
-            try {
-                justices.add(mapper.treeToValue(magistrate, Justice.class));
-            } catch (JsonProcessingException ex) {
-                // TODO Raise incident in snow
-                log.error(EXCEPTION_MESSAGE, ex.getMessage());
-            }
-        });
+        if (magistrates != null) {
+            magistrates.forEach(magistrate -> {
+                try {
+                    justices.add(mapper.treeToValue(magistrate, Justice.class));
+                } catch (JsonProcessingException ex) {
+                    // TODO Raise incident in snow
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                }
+            });
+        }
 
-        districtJudges.forEach(districtJudge -> {
-            try {
-                justices.add(mapper.treeToValue(districtJudge, Justice.class));
-            } catch (JsonProcessingException ex) {
-                // TODO Raise incident in snow
-                log.error(EXCEPTION_MESSAGE, ex.getMessage());
-            }
-        });
+        if (districtJudges != null) {
+            districtJudges.forEach(districtJudge -> {
+                try {
+                    justices.add(mapper.treeToValue(districtJudge, Justice.class));
+                } catch (JsonProcessingException ex) {
+                    // TODO Raise incident in snow
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                }
+            });
+        }
         justiceRepository.saveAll(justices);
     }
 
@@ -138,15 +141,17 @@ public class ProcessingService {
      */
     private void handleLocationsToModel(JsonNode locations) {
         List<Location> locationsList = new ArrayList<>();
-        locations.forEach(location -> {
-            try {
-                locationsList.add(mapper.treeToValue(location, Location.class));
-            } catch (JsonProcessingException ex) {
-                // TODO Raise incident in snow
-                log.error(EXCEPTION_MESSAGE, ex.getMessage());
-            }
-        });
-        locationRepository.saveAll(locationsList);
+        if (locations != null) {
+            locations.forEach(location -> {
+                try {
+                    locationsList.add(mapper.treeToValue(location, Location.class));
+                } catch (JsonProcessingException ex) {
+                    // TODO Raise incident in snow
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                }
+            });
+            locationRepository.saveAll(locationsList);
+        }
     }
 
     /**
@@ -155,15 +160,17 @@ public class ProcessingService {
      */
     private void handleVenuesToModel(JsonNode venues) {
         List<Venue> venuesList = new ArrayList<>();
-        venues.forEach(venue -> {
-            try {
-                venuesList.add(mapper.treeToValue(venue, Venue.class));
-            } catch (JsonProcessingException ex) {
-                // TODO Raise incident in snow
-                log.error(EXCEPTION_MESSAGE, ex.getMessage());
-            }
-        });
-        venueRepository.saveAll(venuesList);
+        if (venues != null) {
+            venues.forEach(venue -> {
+                try {
+                    venuesList.add(mapper.treeToValue(venue, Venue.class));
+                } catch (JsonProcessingException ex) {
+                    // TODO Raise incident in snow
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                }
+            });
+            venueRepository.saveAll(venuesList);
+        }
     }
 
     /**
@@ -172,16 +179,20 @@ public class ProcessingService {
      */
     private void handleCourtListingProfilesToModel(JsonNode courtListingProfiles) {
         List<CourtListingProfile> courtListingProfileList = new ArrayList<>();
-        courtListingProfiles.forEach(courtListingProfile -> {
-            try {
-                courtListingProfileList.add(mapper.treeToValue(courtListingProfile,
-                    CourtListingProfile.class));
-            } catch (JsonProcessingException ex) {
-                // TODO Raise incident in snow
-                log.error(EXCEPTION_MESSAGE, ex.getMessage());
-            }
-        });
-        courtListingProfileRepository.saveAll(courtListingProfileList);
+        if (courtListingProfiles != null) {
+            courtListingProfiles.forEach(courtListingProfile -> {
+                try {
+                    courtListingProfileList.add(mapper.treeToValue(
+                        courtListingProfile,
+                        CourtListingProfile.class
+                    ));
+                } catch (JsonProcessingException ex) {
+                    // TODO Raise incident in snow
+                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                }
+            });
+            courtListingProfileRepository.saveAll(courtListingProfileList);
+        }
     }
 
     /**
@@ -190,15 +201,17 @@ public class ProcessingService {
      */
     private void handleSchedulesToModel(JsonNode schedules) {
         List<Schedule> scheduleList = new ArrayList<>();
-        schedules.forEach(schedule -> {
-            scheduleList.add(new Schedule(
-                schedule.get("id").textValue(),
-                schedule.get("courtListingProfile").get("idref").textValue(),
-                schedule.get("justice").get("idref").textValue(),
-                schedule.get("slot").textValue()
-            ));
-        });
-        scheduleRepository.saveAll(scheduleList);
+        if (schedules != null) {
+            schedules.forEach(schedule -> {
+                scheduleList.add(new Schedule(
+                    schedule.get("id").textValue(),
+                    schedule.get("courtListingProfile").get("idref").textValue(),
+                    schedule.get("justice").get("idref").textValue(),
+                    schedule.get("slot").textValue()
+                ));
+            });
+            scheduleRepository.saveAll(scheduleList);
+        }
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {
@@ -207,5 +220,8 @@ public class ProcessingService {
 
         // Break the lease and copy blob for processing
         azureBlobService.copyBlobToProcessingContainer(blob.getName(), leaseId);
+
+        // Delete the original blob
+        azureBlobService.deleteOriginalBlob(blob.getName());
     }
 }

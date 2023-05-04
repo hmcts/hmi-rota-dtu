@@ -51,11 +51,12 @@ public class ConversionService {
         } catch (IOException e) {
             log.error(String.format("Failed to convert the blob to Json with error message: %s", e.getMessage()));
         }
+
         return null;
     }
 
-    public List<Map<String, String>> createRequestJson() {
-        List<Map<String, String>> requestsJson = new ArrayList<>();
+    public Map<String, String> createRequestJson() {
+        Map<String, String> requestMap = new ConcurrentHashMap<>();
         List<String> uniqueClpIds = scheduleRepository.getUniqueClpIds();
         if (!uniqueClpIds.isEmpty()) {
             uniqueClpIds.forEach(clpId -> {
@@ -65,16 +66,15 @@ public class ConversionService {
                 ObjectMapper mapper = new ObjectMapper();
                 try {
                     String json = mapper.writeValueAsString(hmiJsonRequest);
-                    Map<String, String> request = new ConcurrentHashMap<>();
-                    request.put(clpId, json);
-                    requestsJson.add(request);
+                    requestMap.put(clpId, json);
                 } catch (JsonProcessingException ex) {
+                    // TODO raise in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
         }
 
-        return requestsJson;
+        return requestMap;
     }
 
     public Session formatRequestJson(String clpId) {
@@ -103,6 +103,7 @@ public class ConversionService {
             Optional<Justice> justice = justiceRepository.findById(schedule.getJusticeId());
             justice.ifPresent(value -> judges.add(new Judge(value.getEmail(), schedule.getSlot())));
         });
+
         return judges;
     }
 

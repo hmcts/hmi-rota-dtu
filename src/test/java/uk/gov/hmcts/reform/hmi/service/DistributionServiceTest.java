@@ -41,20 +41,20 @@ class DistributionServiceTest {
     }
 
     @Test
-    void testSendBlobName() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setBody("Email has been sent"));
+    void testSendProcessedJson() {
+        mockWebServerEndpoint.enqueue(new MockResponse().setBody("Test json data string"));
 
-        distributionService.sendBlobName("Blob name");
-        assertTrue(logCaptor.getInfoLogs().get(0).contains("Latest blob name has been sent"),
+        distributionService.sendProcessedJson("Test json data string");
+        assertTrue(logCaptor.getInfoLogs().get(0).contains("Json data has been sent"),
                    "Info log did not contain message");
     }
 
     @Test
-    void testSendBlobNameFailed() {
+    void testSendProcessedJsonFailed() {
         mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.BAD_REQUEST.value()));
 
-        distributionService.sendBlobName("Blob name");
-        assertTrue(logCaptor.getErrorLogs().get(0).contains("Request failed with error message:"),
+        distributionService.sendProcessedJson("Test json data string");
+        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
                    "Error logs did not contain message");
     }
 }

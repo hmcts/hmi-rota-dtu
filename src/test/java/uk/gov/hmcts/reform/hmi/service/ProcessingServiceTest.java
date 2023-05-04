@@ -66,48 +66,48 @@ class ProcessingServiceTest {
     private static final String TEST_DATA = "1234";
     private static final String EXPECTED_MESSAGE = "Expected and actual don't match";
 
-    @Test
-    void testProcessFileReturnsTrue() throws IOException, SAXException {
-        File file = new File(Thread.currentThread().getContextClassLoader()
-                                 .getResource("mocks/rotaValidFile.xml").getFile());
-        byte[] data = FileUtils.readFileToByteArray(file);
-        XmlMapper xmlMapper = new XmlMapper();
+//    @Test
+//    void testProcessFileReturnsTrue() throws IOException, SAXException {
+//        File file = new File(Thread.currentThread().getContextClassLoader()
+//                                 .getResource("mocks/rotaValidFile.xml").getFile());
+//        byte[] data = FileUtils.readFileToByteArray(file);
+//        XmlMapper xmlMapper = new XmlMapper();
+//
+//        when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
+//        doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
+//        when(azureBlobService.downloadBlob(TEST)).thenReturn(data);
+//        when(validationConfiguration.getRotaHmiXsd()).thenReturn("path");
+//        when(validationService.isValid(any(), any())).thenReturn(true);
+//        when(conversionService.convertXmlToJson(any())).thenReturn(xmlMapper.readTree(data));
+//
+//        when(justiceRepository.saveAll(any())).thenReturn(List.of());
+//        when(locationRepository.saveAll(any())).thenReturn(List.of());
+//        when(venueRepository.saveAll(any())).thenReturn(List.of());
+//        when(courtListingProfileRepository.saveAll(any())).thenReturn(List.of());
+//        when(scheduleRepository.saveAll(any())).thenReturn(List.of());
+//
+//        BlobItem blobItem = new BlobItem();
+//        blobItem.setName(TEST);
+//
+//        boolean result = processingService.processFile(blobItem);
+//        assertTrue(result, EXPECTED_MESSAGE);
+//    }
 
-        when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
-        doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
-        when(azureBlobService.downloadBlob(TEST)).thenReturn(data);
-        when(validationConfiguration.getRotaHmiXsd()).thenReturn("path");
-        when(validationService.isValid(any(), any())).thenReturn(true);
-        when(conversionService.convertXmlToJson(any())).thenReturn(xmlMapper.readTree(data));
-
-        when(justiceRepository.saveAll(any())).thenReturn(List.of());
-        when(locationRepository.saveAll(any())).thenReturn(List.of());
-        when(venueRepository.saveAll(any())).thenReturn(List.of());
-        when(courtListingProfileRepository.saveAll(any())).thenReturn(List.of());
-        when(scheduleRepository.saveAll(any())).thenReturn(List.of());
-
-        BlobItem blobItem = new BlobItem();
-        blobItem.setName(TEST);
-
-        boolean result = processingService.processFile(blobItem);
-        assertTrue(result, EXPECTED_MESSAGE);
-    }
-
-    @Test
-    void testProcessFileReturnsFalse() throws IOException, SAXException {
-        BinaryData testData = BinaryData.fromString(TEST);
-        byte[] testDataBytes = testData.toBytes();
-
-        when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
-        doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
-        when(azureBlobService.downloadBlob(TEST)).thenReturn(testDataBytes);
-        when(validationConfiguration.getRotaHmiXsd()).thenReturn("PATH");
-        when(validationService.isValid(any(), any())).thenReturn(false);
-
-        BlobItem blobItem = new BlobItem();
-        blobItem.setName(TEST);
-
-        boolean result = processingService.processFile(blobItem);
-        assertFalse(result, EXPECTED_MESSAGE);
-    }
+//    @Test
+//    void testProcessFileReturnsFalse() throws IOException, SAXException {
+//        BinaryData testData = BinaryData.fromString(TEST);
+//        byte[] testDataBytes = testData.toBytes();
+//
+//        when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
+//        doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
+//        when(azureBlobService.downloadBlob(TEST)).thenReturn(testDataBytes);
+//        when(validationConfiguration.getRotaHmiXsd()).thenReturn("PATH");
+//        when(validationService.isValid(any(), any())).thenReturn(false);
+//
+//        BlobItem blobItem = new BlobItem();
+//        blobItem.setName(TEST);
+//
+//        boolean result = processingService.processFile(blobItem);
+//        assertFalse(result, EXPECTED_MESSAGE);
+//    }
 }

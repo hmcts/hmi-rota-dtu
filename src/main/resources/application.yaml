@@ -12,10 +12,6 @@ management:
         include: health, info, prometheus
 
 spring:
-  config:
-    import: "optional:configtree:/mnt/secrets/hmi-kv/"
-  application:
-    name: HMI Rota DTU
   cloud:
     azure:
       active-directory:
@@ -29,7 +25,12 @@ spring:
           hmiApim:
             authorization-grant-type: client_credentials
             scopes:
-              - ${DATA_MANAGEMENT_AZ_API}/.default
+              - ${HMI_APIM_AZ_API}/.default
+
+  config:
+    import: "optional:configtree:/mnt/secrets/hmi-kv/"
+  application:
+    name: HMI Rota DTU
   datasource:
     driverClassName: org.h2.Driver
     jpa:

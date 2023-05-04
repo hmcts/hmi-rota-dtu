@@ -49,4 +49,7 @@ class ConversionServiceTest {
                    "Error log did not contain message");
 
     }
+
+    //TODO createRequestJson
+    //TODO formatRequestJson
 }
