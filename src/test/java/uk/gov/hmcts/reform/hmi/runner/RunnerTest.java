@@ -16,8 +16,9 @@ import uk.gov.hmcts.reform.hmi.service.ProcessingService;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Future;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -73,9 +74,11 @@ class RunnerTest {
             blobItemProperties.setLeaseStatus(LeaseStatusType.UNLOCKED);
             blobItem.setProperties(blobItemProperties);
             when(azureBlobService.getBlobs()).thenReturn(List.of(blobItem));
-//            when(processingService.processFile(blobItem)).thenReturn(true);
-            when(azureBlobService.deleteOriginalBlob(TEST)).thenReturn("fileDeleted");
 
+            Map<String, String> testMap = new ConcurrentHashMap<>();
+            testMap.put("test", "test-json-data");
+
+            when(processingService.processFile(blobItem)).thenReturn(testMap);
             when(distributionService.sendProcessedJson(any())).thenReturn(CompletableFuture.completedFuture(true));
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
 
