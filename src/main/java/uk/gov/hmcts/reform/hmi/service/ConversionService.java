@@ -68,7 +68,7 @@ public class ConversionService {
                     String json = mapper.writeValueAsString(hmiJsonRequest);
                     requestMap.put(clpId, json);
                 } catch (JsonProcessingException ex) {
-                    // TODO raise in snow
+                    //TODO raise in SNOW
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });

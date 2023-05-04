@@ -108,7 +108,7 @@ class ConversionServiceTest {
         when(courtListingProfileRepository.findById(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(courtListingProfile));
 
-        List<Map<String, String>> requestsJson = conversionService.createRequestJson();
+        Map<String, String> requestsJson = conversionService.createRequestJson();
         assertFalse(requestsJson.isEmpty(), EXPECTED_MESSAGE);
     }
 }
