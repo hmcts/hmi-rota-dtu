@@ -55,6 +55,7 @@ public class Runner implements CommandLineRunner {
                     responseStatus = response.get();
                 } catch (InterruptedException | ExecutionException e) {
                     log.error("Async issue. Raise SNOW"); //TODO for SNOW
+                    Thread.currentThread().interrupt();
                 }
 
                 if (!responseStatus) {
