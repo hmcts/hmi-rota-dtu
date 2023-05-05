@@ -72,17 +72,18 @@ class ProcessingServiceTest {
     void testProcessFile() throws IOException, SAXException {
         File file = new File(Thread.currentThread().getContextClassLoader()
                                  .getResource("mocks/rotaValidFile.xml").getFile());
-        byte[] data = FileUtils.readFileToByteArray(file);
-        XmlMapper xmlMapper = new XmlMapper();
-        Map<String, String> testMap = new ConcurrentHashMap<>();
-        testMap.put("1234", "testString");
+
 
         when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
         doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
-        when(azureBlobService.downloadBlob(TEST)).thenReturn(data);
+        byte[] fileByteArray = FileUtils.readFileToByteArray(file);
+        when(azureBlobService.downloadBlob(TEST)).thenReturn(fileByteArray);
+        XmlMapper mapper = new XmlMapper();
+        Map<String, String> testMap = new ConcurrentHashMap<>();
+        testMap.put("1234", "testString");
+        when(conversionService.convertXmlToJson(any())).thenReturn(mapper.readTree(fileByteArray));
         when(validationConfiguration.getRotaHmiXsd()).thenReturn("path");
         when(validationService.isValid(any(), any())).thenReturn(true);
-        when(conversionService.convertXmlToJson(any())).thenReturn(xmlMapper.readTree(data));
 
         when(justiceRepository.saveAll(any())).thenReturn(List.of());
         when(locationRepository.saveAll(any())).thenReturn(List.of());
