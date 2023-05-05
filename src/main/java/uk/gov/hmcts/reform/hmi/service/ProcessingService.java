@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
 import uk.gov.hmcts.reform.hmi.config.ValidationConfiguration;
@@ -53,7 +54,7 @@ public class ProcessingService {
     ObjectMapper mapper = new ObjectMapper().configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT,
                                                        true);
 
-
+    @Autowired
     public ProcessingService(ValidationService validationService, AzureBlobService azureBlobService,
                              ConversionService conversionService, ValidationConfiguration validationConfiguration,
                              JusticeRepository justiceRepository,
@@ -202,14 +203,12 @@ public class ProcessingService {
     private void handleSchedulesToModel(JsonNode schedules) {
         List<Schedule> scheduleList = new ArrayList<>();
         if (schedules != null) {
-            schedules.forEach(schedule -> {
-                scheduleList.add(new Schedule(
-                    schedule.get("id").textValue(),
-                    schedule.get("courtListingProfile").get("idref").textValue(),
-                    schedule.get("justice").get("idref").textValue(),
-                    schedule.get("slot").textValue()
-                ));
-            });
+            schedules.forEach(schedule -> scheduleList.add(new Schedule(
+                schedule.get("id").textValue(),
+                schedule.get("courtListingProfile").get("idref").textValue(),
+                schedule.get("justice").get("idref").textValue(),
+                schedule.get("slot").textValue()
+            )));
             scheduleRepository.saveAll(scheduleList);
         }
     }
