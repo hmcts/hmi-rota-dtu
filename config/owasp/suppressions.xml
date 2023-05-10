@@ -26,9 +26,11 @@
   </suppress>
   <suppress>
     <cve>CVE-2023-20873</cve>
+    <notes>Bug in springboot. Will need to update springboot</notes>
   </suppress>
   <suppress>
     <cve>CVE-2023-20863</cve>
+    <notes>Bug in springframework. Will need to update springboot</notes>
   </suppress>
   <!--End of temporary suppression section -->
 </suppressions>
