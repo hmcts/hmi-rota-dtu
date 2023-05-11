@@ -37,8 +37,6 @@ spring:
       spring.jpa.database-platform: org.hibernate.dialect.H2Dialect
 
 azure:
-  application-insights:
-    instrumentation-key: ${AZURE_APPLICATIONINSIGHTS_INSTRUMENTATIONKEY:00000000-0000-0000-0000-000000000000}
   blob:
     connection-string: ${CONNECTION_STRING}
     rota-container-name: rota

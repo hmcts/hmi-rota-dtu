@@ -1,5 +1,6 @@
 {
+  "connectionString": "${file:/mnt/secrets/hmi-kv/AZURE_APPLICATIONINSIGHTS_CONNECTION_STRING}",
   "role": {
-    "name": "hmi-rota-dtu"
+    "name": "HMI Rota DTU"
   }
 }
