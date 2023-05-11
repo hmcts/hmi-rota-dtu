@@ -97,8 +97,8 @@ public class ProcessingService {
     }
 
     private void saveRotaJsonIntoDatabase(JsonNode json) {
-        handleJusticesToModel(json.get("magistrates").get("magistrate"),
-                              json.get("districtJudges").get("districtJudge"));
+        handleJusticesToModel(json.get("magistrates").get("magistrate"));
+        handleJusticesToModel(json.get("districtJudges").get("districtJudge"));
         handleLocationsToModel(json.get("locations").get("location"));
         handleVenuesToModel(json.get("venues").get("venue"));
         handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
@@ -106,27 +106,15 @@ public class ProcessingService {
     }
 
     /**
-     * Take in the magistrates and districtJudge json nodes, convert to a model and store in the database.
-     * @param magistrates The magistrates jsonNode.
-     * @param districtJudges The district judge jsonNode.
+     * Take in the jsonNode for either magistrates or district judges, convert to a model and store in the database.
+     * @param justiceJsonNode The justice jsonNode.
      */
-    private void handleJusticesToModel(JsonNode magistrates, JsonNode districtJudges) {
+    private void handleJusticesToModel(JsonNode justiceJsonNode) {
         List<Justice> justices = new ArrayList<>();
-        if (magistrates != null) {
-            magistrates.forEach(magistrate -> {
+        if (justiceJsonNode != null) {
+            justiceJsonNode.forEach(justice -> {
                 try {
-                    justices.add(mapper.treeToValue(magistrate, Justice.class));
-                } catch (JsonProcessingException ex) {
-                    // TODO Raise incident in snow
-                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
-                }
-            });
-        }
-
-        if (districtJudges != null) {
-            districtJudges.forEach(districtJudge -> {
-                try {
-                    justices.add(mapper.treeToValue(districtJudge, Justice.class));
+                    justices.add(mapper.treeToValue(justice, Justice.class));
                 } catch (JsonProcessingException ex) {
                     // TODO Raise incident in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());

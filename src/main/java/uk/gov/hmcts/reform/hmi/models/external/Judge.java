@@ -14,10 +14,10 @@ public class Judge {
      * The id will be the email address of the Magistrate or District Judge.
      */
     private String johId;
+
     /**
      * The slot will come from session.
      */
-
     private String slot;
 
     /**

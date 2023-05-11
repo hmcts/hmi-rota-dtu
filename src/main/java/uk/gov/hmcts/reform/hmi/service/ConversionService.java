@@ -35,6 +35,8 @@ public class ConversionService {
 
     private final CourtListingProfileRepository courtListingProfileRepository;
 
+    private static final ObjectMapper MAPPER = new ObjectMapper();
+
     private static final String EXCEPTION_MESSAGE = "Issue converting model to json";
 
     public ConversionService(ScheduleRepository scheduleRepository, JusticeRepository justiceRepository,
@@ -58,21 +60,16 @@ public class ConversionService {
     public Map<String, String> createRequestJson() {
         Map<String, String> requestMap = new ConcurrentHashMap<>();
         List<String> uniqueClpIds = scheduleRepository.getUniqueClpIds();
-        if (!uniqueClpIds.isEmpty()) {
-            uniqueClpIds.forEach(clpId -> {
-                Session session = formatRequestJson(clpId);
-                HmiJsonRequest hmiJsonRequest = new HmiJsonRequest();
-                hmiJsonRequest.setSession(session);
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    String json = mapper.writeValueAsString(hmiJsonRequest);
-                    requestMap.put(clpId, json);
-                } catch (JsonProcessingException ex) {
-                    //TODO raise in SNOW
-                    log.error(EXCEPTION_MESSAGE, ex.getMessage());
-                }
-            });
-        }
+        uniqueClpIds.forEach(clpId -> {
+            HmiJsonRequest hmiJsonRequest = new HmiJsonRequest(formatRequestJson(clpId));
+            try {
+                String json = MAPPER.writeValueAsString(hmiJsonRequest);
+                requestMap.put(clpId, json);
+            } catch (JsonProcessingException ex) {
+                //TODO raise in SNOW
+                log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            }
+        });
 
         return requestMap;
     }

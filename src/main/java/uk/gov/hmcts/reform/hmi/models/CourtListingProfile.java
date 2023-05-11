@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
- * Class that represents a justice (either a Magistrate or District Judge).
+ * Class that represents a court listing profile.
  */
 @Entity
 @Data
