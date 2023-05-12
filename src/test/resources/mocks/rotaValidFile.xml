@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rotaSchedule xmlns="http://com.moj.mcr.rota/v1/">
+  <rotaPeriod>
+    <justiceAreaType>LJA</justiceAreaType>
+    <justiceAreaName>Berkshire</justiceAreaName>
+    <startDate>2023-04-01</startDate>
+    <endDate>2023-09-30</endDate>
+  </rotaPeriod>
+  <magistrates>
+    <magistrate id="MA8125">
+      <title>Mr</title>
+      <surname>tester</surname>
+      <forenames>magistrate</forenames>
+      <emailAddress>magistrate.tester@email.com</emailAddress>
+    </magistrate>
+  </magistrates>
+  <districtJudges>
+    <districtJudge id="DJ156">
+      <title></title>
+      <surname>JosephaTS</surname>
+      <forenames>OctaviusTS</forenames>
+      <emailAddress>octaviusts.josephats@rotaemail.com</emailAddress>
+    </districtJudge>
+    <districtJudge id="DJ413">
+      <title></title>
+      <surname>PatrikTS</surname>
+      <forenames>EvangelinaTS</forenames>
+      <emailAddress>evangelinats.patrikts@rotaemail.com</emailAddress>
+    </districtJudge>
+  </districtJudges>
+  <locations>
+    <location>
+      <locationId>77</locationId>
+      <name>Reading MC</name>
+    </location>
+    <location>
+      <locationId>79</locationId>
+      <name>Slough MC</name>
+    </location>
+    <location>
+      <locationId>82</locationId>
+      <name>Reading Crown</name>
+    </location>
+  </locations>
+  <venues>
+    <venue>
+      <venueId>42580</venueId>
+      <name>Court 5</name>
+    </venue>
+    <venue>
+      <venueId>42579</venueId>
+      <name>Court 6</name>
+    </venue>
+    <venue>
+      <venueId>42578</venueId>
+      <name>Court 8</name>
+    </venue>
+    <venue>
+      <venueId>42577</venueId>
+      <name>Court 4</name>
+    </venue>
+    <venue>
+      <venueId>42582</venueId>
+      <name>SJP</name>
+    </venue>
+    <venue>
+      <venueId>42584</venueId>
+      <name>Court 2</name>
+    </venue>
+    <venue>
+      <venueId>42585</venueId>
+      <name>SJP</name>
+    </venue>
+    <venue>
+      <venueId>42581</venueId>
+      <name>Court 1</name>
+    </venue>
+    <venue>
+      <venueId>42583</venueId>
+      <name>Court 1</name>
+    </venue>
+    <venue>
+      <venueId>42799</venueId>
+      <name>Reading Crown</name>
+    </venue>
+    <venue>
+      <venueId>44033</venueId>
+      <name>Reading Crown</name>
+    </venue>
+    <venue>
+      <venueId>43241</venueId>
+      <name>Search Warrants</name>
+    </venue>
+  </venues>
+  <courtListingProfiles>
+    <courtListingProfile id="CS4035951">
+      <sessionDate>2023-04-10</sessionDate>
+      <session>PM</session>
+      <panel>ADULT</panel>
+      <business>APP</business>
+      <venueId>42580</venueId>
+      <locationId>77</locationId>
+      <welshSpeaking>false</welshSpeaking>
+      <updatedDate>2023-04-04T13:19:54.538Z</updatedDate>
+    </courtListingProfile>
+    <courtListingProfile id="CS4035952">
+      <sessionDate>2023-04-10</sessionDate>
+      <session>PM</session>
+      <panel>ADULT</panel>
+      <business>APP</business>
+      <venueId>42584</venueId>
+      <locationId>77</locationId>
+      <welshSpeaking>false</welshSpeaking>
+      <updatedDate>2023-04-04T13:19:54.538Z</updatedDate>
+    </courtListingProfile>
+  </courtListingProfiles>
+  <schedules>
+    <schedule id="CS4035951_LEFT_WINGER">
+      <courtListingProfile idref="CS4035951"/>
+      <justice idref="MA8125"/>
+      <slot>LEFT_WINGER</slot>
+    </schedule>
+    <schedule id="CS4035952_LEFT_WINGER">
+      <courtListingProfile idref="CS4035952"/>
+      <justice idref="MA8125"/>
+      <slot>LEFT_WINGER</slot>
+    </schedule>
+  </schedules>
+</rotaSchedule>

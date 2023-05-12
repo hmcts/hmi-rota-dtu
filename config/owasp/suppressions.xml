@@ -11,18 +11,28 @@
 
   <!--Please add all the temporary suppression under the below section-->
   <suppress until="2024-04-14">
-    <notes>
-    </notes>
+    <notes>Bug in snakeyaml, part of spring.</notes>
     <cve>CVE-2022-1471</cve>
   </suppress>
   <suppress>
+    <notes>Bug in spring framework.</notes>
     <cve>CVE-2023-20861</cve>
   </suppress>
   <suppress>
+    <notes>Bug in tomcat.</notes>
     <cve>CVE-2023-28708</cve>
   </suppress>
   <suppress>
+    <notes>Bug in springframework. Will need to update springboot</notes>
     <cve>CVE-2023-20860</cve>
+  </suppress>
+  <suppress>
+    <notes>Bug in H2 database</notes>
+    <cve>CVE-2022-45868</cve>
+  </suppress>
+  <suppress>
+    <notes>Bug with azure_active_directory.</notes>
+    <cve>CVE-2021-42306</cve>
   </suppress>
   <suppress>
     <notes>Bug in springboot. Will need to update springboot</notes>
@@ -32,5 +42,6 @@
     <notes>Bug in springframework. Will need to update springboot</notes>
     <cve>CVE-2023-20863</cve>
   </suppress>
+
   <!--End of temporary suppression section -->
 </suppressions>

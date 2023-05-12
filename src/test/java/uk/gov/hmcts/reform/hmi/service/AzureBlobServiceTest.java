@@ -110,4 +110,15 @@ class AzureBlobServiceTest {
         BlobLeaseClient blobLeaseClient = azureBlobService.setupBlobLease(blobClient, Optional.empty());
         assertNotNull(blobLeaseClient.getLeaseId(), EXPECTED_MESSAGE);
     }
+
+    @Test
+    void testDownloadBlob() {
+        BinaryData testData = BinaryData.fromString(TEST);
+        byte[] testDataBytes = testData.toBytes();
+        when(blobContainerClient.getBlobClient(BLOB_NAME)).thenReturn(blobClient);
+        when(blobClient.downloadContent()).thenReturn(testData);
+
+        byte[] testResponse = azureBlobService.downloadBlob(BLOB_NAME);
+        assertEquals(testDataBytes, testResponse, EXPECTED_MESSAGE);
+    }
 }
