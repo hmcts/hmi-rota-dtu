@@ -6,4 +6,4 @@ COPY build/libs/hmi-rota-dtu.jar /opt/app/
 COPY lib/applicationinsights.json /opt/app/
 
 EXPOSE 3456
-CMD [ "hmi-rota-dtu.jar" ]
+CMD [ "hmi-rota-dtu.jar", "-Xdebug"]
