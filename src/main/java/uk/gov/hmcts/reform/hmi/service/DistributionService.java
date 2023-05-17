@@ -3,11 +3,9 @@ package uk.gov.hmcts.reform.hmi.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
@@ -27,7 +25,6 @@ public class DistributionService {
         this.url = url;
     }
 
-    @Async
     public Future<Boolean> sendProcessedJson(String jsonData) {
         try {
             webClient.post().uri(url + "/schedules")
@@ -41,7 +38,7 @@ public class DistributionService {
                 .bodyToMono(String.class).block();
             log.info("Json data has been sent");
             return CompletableFuture.completedFuture(true);
-        } catch (WebClientException ex) {
+        } catch (Exception ex) {
             log.error("Error response from HMI APIM:", ex.getMessage());
 
             return CompletableFuture.completedFuture(false);
