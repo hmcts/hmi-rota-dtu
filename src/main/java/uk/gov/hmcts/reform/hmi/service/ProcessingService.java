@@ -103,7 +103,6 @@ public class ProcessingService {
         handleVenuesToModel(json.get("venues").get("venue"));
         handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
         handleSchedulesToModel(json.get("schedules").get("schedule"));
-        log.info("Rota JSON SAVED");
     }
 
     /**

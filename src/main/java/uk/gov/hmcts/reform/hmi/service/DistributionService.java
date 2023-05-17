@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientException;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
@@ -38,8 +39,8 @@ public class DistributionService {
                 .bodyToMono(String.class).block();
             log.info("Json data has been sent");
             return CompletableFuture.completedFuture(true);
-        } catch (Exception ex) {
-            log.error("Error response from HMI APIM:", ex);
+        } catch (WebClientException ex) {
+            log.error("Error response from HMI APIM:", ex.getMessage());
 
             return CompletableFuture.completedFuture(false);
         }
