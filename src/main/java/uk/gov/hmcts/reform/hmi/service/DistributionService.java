@@ -39,7 +39,7 @@ public class DistributionService {
             log.info("Json data has been sent");
             return CompletableFuture.completedFuture(true);
         } catch (Exception ex) {
-            log.error("Error response from HMI APIM:", ex.getMessage());
+            log.error("Error response from HMI APIM:", ex);
 
             return CompletableFuture.completedFuture(false);
         }
