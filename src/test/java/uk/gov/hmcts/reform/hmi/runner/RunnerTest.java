@@ -79,7 +79,7 @@ class RunnerTest {
             testMap.put("test", "test-json-data");
 
             when(processingService.processFile(blobItem)).thenReturn(testMap);
-            when(distributionService.sendProcessedJson(any())).thenReturn(CompletableFuture.completedFuture(true));
+            when(distributionService.sendProcessedJson(any())).thenReturn(CompletableFuture.completedFuture(""));
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
 
             runner.run();

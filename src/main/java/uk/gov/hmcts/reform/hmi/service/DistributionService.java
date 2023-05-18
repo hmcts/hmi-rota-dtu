@@ -28,7 +28,7 @@ public class DistributionService {
     }
 
     @Async
-    public Future<Boolean> sendProcessedJson(String jsonData) {
+    public Future<String> sendProcessedJson(String jsonData) {
         try {
             webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
@@ -40,11 +40,11 @@ public class DistributionService {
                 .body(BodyInserters.fromValue(jsonData)).retrieve()
                 .bodyToMono(String.class).block();
             log.info("Json data has been sent");
-            return CompletableFuture.completedFuture(true);
+            return CompletableFuture.completedFuture("");
         } catch (WebClientException ex) {
             log.error("Error response from HMI APIM:", ex.getMessage());
 
-            return CompletableFuture.completedFuture(false);
+            return CompletableFuture.completedFuture(ex.getMessage());
         }
     }
 }

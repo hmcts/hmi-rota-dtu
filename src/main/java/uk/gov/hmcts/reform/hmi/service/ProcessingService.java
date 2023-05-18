@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -36,6 +38,8 @@ public class ProcessingService {
     private final AzureBlobService azureBlobService;
 
     private final ConversionService conversionService;
+
+    private final ServiceNowService serviceNowService;
 
     private final ValidationConfiguration validationConfiguration;
 
@@ -55,15 +59,20 @@ public class ProcessingService {
                                                        true);
 
     @Autowired
-    public ProcessingService(ValidationService validationService, AzureBlobService azureBlobService,
-                             ConversionService conversionService, ValidationConfiguration validationConfiguration,
+    public ProcessingService(ValidationService validationService,
+                             AzureBlobService azureBlobService,
+                             ConversionService conversionService,
+                             ServiceNowService serviceNowService,
+                             ValidationConfiguration validationConfiguration,
                              JusticeRepository justiceRepository,
-                             LocationRepository locationRepository, VenueRepository venueRepository,
+                             LocationRepository locationRepository,
+                             VenueRepository venueRepository,
                              CourtListingProfileRepository courtListingProfileRepository,
                              ScheduleRepository scheduleRepository) {
         this.validationService = validationService;
         this.azureBlobService = azureBlobService;
         this.conversionService = conversionService;
+        this.serviceNowService = serviceNowService;
         this.validationConfiguration = validationConfiguration;
         this.justiceRepository = justiceRepository;
         this.locationRepository = locationRepository;
@@ -92,6 +101,8 @@ public class ProcessingService {
             return conversionService.createRequestJson();
         } else {
             log.error("Raise snow request TODO");
+            serviceNowService.createServiceNowRequest(String.format("Unable to validate file %s against rota XML schema", blob.getName()),
+                                                      "XML file validation failed");
             return Collections.emptyMap();
         }
     }
@@ -116,7 +127,6 @@ public class ProcessingService {
                 try {
                     justices.add(mapper.treeToValue(justice, Justice.class));
                 } catch (JsonProcessingException ex) {
-                    // TODO Raise incident in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
@@ -135,7 +145,6 @@ public class ProcessingService {
                 try {
                     locationsList.add(mapper.treeToValue(location, Location.class));
                 } catch (JsonProcessingException ex) {
-                    // TODO Raise incident in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
@@ -154,7 +163,6 @@ public class ProcessingService {
                 try {
                     venuesList.add(mapper.treeToValue(venue, Venue.class));
                 } catch (JsonProcessingException ex) {
-                    // TODO Raise incident in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
@@ -176,7 +184,6 @@ public class ProcessingService {
                         CourtListingProfile.class
                     ));
                 } catch (JsonProcessingException ex) {
-                    // TODO Raise incident in snow
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                 }
             });
@@ -198,6 +205,15 @@ public class ProcessingService {
                 schedule.get("slot").textValue()
             )));
             scheduleRepository.saveAll(scheduleList);
+        }
+    }
+
+    @Transactional
+    public void saveErrorMessage(String clpId, String errorMessage, String requestJson) {
+        courtListingProfileRepository.updateCourtListingProfileWithError(clpId, errorMessage, requestJson);
+        Optional<CourtListingProfile> clpObject = courtListingProfileRepository.findById(clpId);
+        if (clpObject.isPresent()) {
+
         }
     }
 

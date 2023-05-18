@@ -45,5 +45,14 @@ azure:
 service-to-service:
   hmi-apim: ${HMI_APIM}
 
+service-now:
+  sn_url: ${SN_URL}
+  username: ${USERNAME}
+  password: ${PASSWORD}
+  assignment_group: ${ASSIGNMENT_GROUP}
+  caller_id: ${CALLER_ID}
+  service-offering: ${SERVICE_OFFERING}
+  role_type: ${ROLE_TYPE}
+
 validations:
   rota-hmi-xsd: "schemas/rota-hmi-interface.xsd"

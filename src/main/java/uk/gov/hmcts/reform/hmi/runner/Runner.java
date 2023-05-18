@@ -49,8 +49,9 @@ public class Runner implements CommandLineRunner {
 
             //Process the selected blob
             processingService.processFile(blob).forEach((key, value) -> {
-                Future<Boolean> response = distributionService.sendProcessedJson(value);
-                Boolean responseStatus = null;
+                Future<String> response = distributionService.sendProcessedJson(value);
+                processingService.saveErrorMessage(key, "Error message", value);
+                String responseStatus = null;
                 try {
                     responseStatus = response.get();
                 } catch (InterruptedException | ExecutionException e) {
@@ -58,10 +59,10 @@ public class Runner implements CommandLineRunner {
                     Thread.currentThread().interrupt();
                 }
 
-                if (!responseStatus) {
+                /*if (!responseStatus.isEmpty()) {
                     log.info("Blob failed");
                     //TODO store in database for SNOW
-                }
+                }*/
             });
 
             // Delete the processed file as we no longer need it
