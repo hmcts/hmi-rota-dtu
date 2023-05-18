@@ -33,7 +33,7 @@ public class DistributionService {
             webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
-                .header("Destination-System", "MOCK") //TODO Change this
+                .header("Destination-System", "SNL")
                 .header("Request-Created-At", LocalDateTime.now().toString())
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
