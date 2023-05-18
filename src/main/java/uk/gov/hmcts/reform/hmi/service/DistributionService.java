@@ -9,7 +9,9 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 
-import java.time.LocalDateTime;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
@@ -21,6 +23,9 @@ public class DistributionService {
 
     private final String url;
     private final WebClient webClient;
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
+                                                                           new Locale("eng", "GB"));
 
     public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url) {
         this.webClient = webClient;
@@ -34,7 +39,7 @@ public class DistributionService {
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
                 .header("Destination-System", "SNL")
-                .header("Request-Created-At", LocalDateTime.now().toString())
+                .header("Request-Created-At", simpleDateFormat.format(new Date()))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(jsonData)).retrieve()

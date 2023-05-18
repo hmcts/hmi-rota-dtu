@@ -18,7 +18,7 @@ public class Location {
     /**
      * This will be ROTA.
      */
-    private String locationReferenceId;
+    private String locationReferenceType;
 
     /**
      * LocationType can be Room or Court.
@@ -27,7 +27,7 @@ public class Location {
 
     public Location(String locationId, String locationType) {
         this.locationId = locationId;
-        this.setLocationReferenceId("ROTA");
+        this.setLocationReferenceType("ROTA");
         this.locationType = locationType;
     }
 }
