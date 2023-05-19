@@ -104,4 +104,9 @@
       <updatedDate>2023-04-04T13:19:54.538Z</updatedDate>
     </courtListingProfile>
   </courtListingProfiles>
+  <schedules>
+    <schedule id="CS4035951_LEFT_WINGER">
+      <slot>LEFT_WINGER</slot>
+    </schedule>
+  </schedules>
 </rotaSchedule>

@@ -24,6 +24,7 @@ import uk.gov.hmcts.reform.hmi.models.Venue;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -101,6 +102,7 @@ public class ProcessingService {
             if (!result.isEmpty()) {
                 serviceNowService.createServiceNowRequest(result,
                     String.format("Unable to save file %s in database", blob.getName()));
+                return new HashMap<>();
             }
             return conversionService.createRequestJson();
         } else {
@@ -113,28 +115,29 @@ public class ProcessingService {
 
     private StringBuilder saveRotaJsonIntoDatabase(JsonNode json) {
         StringBuilder errors = new StringBuilder();
+        String newLine = "\n";
         if (!handleJusticesToModel(json.get("magistrates").get("magistrate"))) {
-            errors.append("Unable to save magistrates in database");
+            errors.append("Unable to save magistrates in database").append(newLine);
         }
 
         if (!handleJusticesToModel(json.get("districtJudges").get("districtJudge"))) {
-            errors.append("Unable to save districtJudges in database");
+            errors.append("Unable to save districtJudges in database").append(newLine);
         }
 
         if (!handleLocationsToModel(json.get("locations").get("location"))) {
-            errors.append("Unable to save locations in database");
+            errors.append("Unable to save locations in database").append(newLine);
         }
 
         if (!handleVenuesToModel(json.get("venues").get("venue"))) {
-            errors.append("Unable to save venues in database");
+            errors.append("Unable to save venues in database").append(newLine);
         }
 
         if (!handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"))) {
-            errors.append("Unable to save courtListingProfiles in database");
+            errors.append("Unable to save courtListingProfiles in database").append(newLine);
         }
 
         if (!handleSchedulesToModel(json.get("schedules").get("schedule"))) {
-            errors.append("Unable to save schedules in database");
+            errors.append("Unable to save schedules in database").append(newLine);
         }
 
         return errors;

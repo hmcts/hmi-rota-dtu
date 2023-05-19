@@ -20,6 +20,7 @@ import uk.gov.hmcts.reform.hmi.database.VenueRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -119,5 +120,33 @@ class ProcessingServiceTest {
 
         Map<String, String> result = processingService.processFile(blobItem);
         assertTrue(result.isEmpty(), EXPECTED_MESSAGE);
+    }
+
+    @Test
+    void testProcessFileErrorWhileSavingIntoDatabase() throws IOException, SAXException {
+        File file = new File(Thread.currentThread().getContextClassLoader()
+                                 .getResource("mocks/rotaInvalidFile.xml").getFile());
+
+
+        when(azureBlobService.acquireBlobLease(TEST)).thenReturn(TEST_DATA);
+        doNothing().when(azureBlobService).copyBlobToProcessingContainer(TEST, TEST_DATA);
+        byte[] fileByteArray = FileUtils.readFileToByteArray(file);
+        when(azureBlobService.downloadBlob(TEST)).thenReturn(fileByteArray);
+        XmlMapper mapper = new XmlMapper();
+        when(conversionService.convertXmlToJson(any())).thenReturn(mapper.readTree(fileByteArray));
+        when(validationConfiguration.getRotaHmiXsd()).thenReturn("path");
+        when(validationService.isValid(any(), any())).thenReturn(true);
+
+        when(justiceRepository.saveAll(any())).thenReturn(List.of());
+        when(locationRepository.saveAll(any())).thenReturn(List.of());
+        when(venueRepository.saveAll(any())).thenReturn(List.of());
+        when(courtListingProfileRepository.saveAll(any())).thenReturn(List.of());
+        when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
+
+        BlobItem blobItem = new BlobItem();
+        blobItem.setName(TEST);
+
+        Map<String, String> result = processingService.processFile(blobItem);
+        assertEquals(new HashMap<>(), result, EXPECTED_MESSAGE);
     }
 }

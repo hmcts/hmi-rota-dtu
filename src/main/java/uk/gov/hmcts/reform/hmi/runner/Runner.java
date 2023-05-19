@@ -38,6 +38,7 @@ public class Runner implements CommandLineRunner {
     }
 
     @Override
+    @SuppressWarnings("PMD")
     public void run(String... args) throws IOException, SAXException {
         List<BlobItem> listOfBlobs = azureBlobService.getBlobs();
         log.info("All blobs retrieved");
@@ -57,12 +58,14 @@ public class Runner implements CommandLineRunner {
                 String responseStatus = null;
                 try {
                     responseStatus = response.get();
-                } catch (InterruptedException | ExecutionException e) {
-                    log.error("Async issue. Raise SNOW");
+                } catch (InterruptedException | ExecutionException | NullPointerException e) {
+                    log.error("Async issue");
+                    formatErrorResponse(responseErrors, key, "Async issue while process this request");
                     Thread.currentThread().interrupt();
                 }
 
-                if (!responseStatus.contains("received successfully")) {
+                if (responseStatus != null
+                        && !responseStatus.contains("received successfully")) {
                     log.info("Blob failed");
                     formatErrorResponse(responseErrors, key, responseStatus);
                 }

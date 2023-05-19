@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
@@ -46,15 +47,15 @@ public class DistributionService {
                 .retrieve()
                 .onStatus(
                     HttpStatus.BAD_REQUEST::equals,
-                    response -> response.bodyToMono(String.class).map(Exception::new))
+                    response -> response.bodyToMono(String.class).map(InterruptedException::new))
                 .bodyToMono(String.class)
                 .toFuture()
                 .get();
             log.info("Json data has been sent");
             return CompletableFuture.completedFuture(apiResponse);
-        } catch (Exception ex) {
+        } catch (InterruptedException | ExecutionException ex) {
             log.error("Error response from HMI APIM:", ex.getMessage());
-
+            Thread.currentThread().interrupt();
             return CompletableFuture.completedFuture(ex.getMessage());
         }
     }

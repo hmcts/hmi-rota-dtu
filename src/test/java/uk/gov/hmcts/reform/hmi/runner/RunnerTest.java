@@ -13,6 +13,7 @@ import org.xml.sax.SAXException;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 import uk.gov.hmcts.reform.hmi.service.ProcessingService;
+import uk.gov.hmcts.reform.hmi.service.ServiceNowService;
 
 import java.io.IOException;
 import java.util.List;
@@ -36,6 +37,9 @@ class RunnerTest {
 
     @Mock
     ProcessingService processingService;
+
+    @Mock
+    ServiceNowService serviceNowService;
 
     @InjectMocks
     Runner runner;
@@ -103,6 +107,34 @@ class RunnerTest {
 
             assertEquals(3, logCaptor.getInfoLogs().size(),
                        "More info logs than expected"
+            );
+        }
+    }
+
+    @Test
+    void testRunnerWithEligibleBlobFailedRequest() throws IOException, SAXException {
+        try (LogCaptor logCaptor = LogCaptor.forClass(Runner.class)) {
+            BlobItem blobItem = new BlobItem();
+            blobItem.setName(TEST);
+            BlobItemProperties blobItemProperties = new BlobItemProperties();
+            blobItemProperties.setLeaseStatus(LeaseStatusType.UNLOCKED);
+            blobItem.setProperties(blobItemProperties);
+            when(azureBlobService.getBlobs()).thenReturn(List.of(blobItem));
+
+            Map<String, String> testMap = new ConcurrentHashMap<>();
+            testMap.put("test", "test-json-data");
+
+            when(processingService.processFile(blobItem)).thenReturn(testMap);
+            when(distributionService.sendProcessedJson(any()))
+                .thenReturn(null);
+            when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
+            when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
+
+            runner.run();
+
+            assertTrue(
+                logCaptor.getErrorLogs().get(0).contains("Async issue"),
+                RESPONSE_MESSAGE
             );
         }
     }
