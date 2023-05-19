@@ -51,10 +51,12 @@ public class ServiceNowService {
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(formatBody(errorDescription, shortDescription))).retrieve()
                 .bodyToMono(String.class).block();
-            log.info("ServiceNow ticket has been created");
-            if (response != null) {
-                return response.contains("INC");
+            if (response != null
+                && response.contains("INC")) {
+                log.info("ServiceNow ticket has been created");
+                return true;
             }
+            log.error("Error while create ServiceNow ticket");
             return false;
         } catch (WebClientException ex) {
             log.error("Error while create ServiceNow ticket:", ex.getMessage());
