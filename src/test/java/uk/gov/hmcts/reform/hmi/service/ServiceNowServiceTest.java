@@ -24,8 +24,6 @@ class ServiceNowServiceTest {
 
     private static MockWebServer mockWebServerEndpoint;
 
-    private static StringBuilder requestBody = new StringBuilder();
-
     LogCaptor logCaptor = LogCaptor.forClass(ServiceNowService.class);
 
     ServiceNowService serviceNowService;
@@ -41,7 +39,6 @@ class ServiceNowServiceTest {
                                                   "roleType");
         mockWebServerEndpoint = new MockWebServer();
         mockWebServerEndpoint.start(1234);
-        requestBody.append("Test Error");
     }
 
     @AfterEach
@@ -53,7 +50,7 @@ class ServiceNowServiceTest {
     void testCreateServiceNow() throws JsonProcessingException {
         mockWebServerEndpoint.enqueue(new MockResponse().setBody("INC123456"));
 
-        boolean result = serviceNowService.createServiceNowRequest(requestBody, "");
+        boolean result = serviceNowService.createServiceNowRequest(new StringBuilder(), "");
         assertTrue(result, "Did not receive expected result");
         assertTrue(logCaptor.getInfoLogs().get(0).contains("ServiceNow ticket has been created"),
                    "Info log did not contain message");
@@ -63,7 +60,7 @@ class ServiceNowServiceTest {
     void testCreateServiceNowReturnFalse() throws JsonProcessingException {
         mockWebServerEndpoint.enqueue(new MockResponse().setBody("Test error"));
 
-        boolean result = serviceNowService.createServiceNowRequest(requestBody, "");
+        boolean result = serviceNowService.createServiceNowRequest(new StringBuilder(), "");
         assertFalse(result, "Did not receive expected result");
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error while create ServiceNow ticket"),
                    "Info log did not contain message");
@@ -73,7 +70,7 @@ class ServiceNowServiceTest {
     void testCreateServiceNowFailed() throws JsonProcessingException {
         mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.BAD_REQUEST.value()));
 
-        serviceNowService.createServiceNowRequest(requestBody, "");
+        serviceNowService.createServiceNowRequest(new StringBuilder(), "");
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error while create ServiceNow ticket:"),
                    "Error logs did not contain message");
     }
