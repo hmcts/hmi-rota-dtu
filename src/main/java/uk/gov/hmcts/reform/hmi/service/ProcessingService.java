@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,10 +26,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Slf4j
 @Service
+@SuppressWarnings("PMD")
 public class ProcessingService {
 
     private final ValidationService validationService;
@@ -97,85 +97,119 @@ public class ProcessingService {
 
         if (isFileValid) {
             JsonNode rotaJson = conversionService.convertXmlToJson(blobData);
-            saveRotaJsonIntoDatabase(rotaJson);
+            StringBuilder result = saveRotaJsonIntoDatabase(rotaJson);
+            if (!result.isEmpty()) {
+                serviceNowService.createServiceNowRequest(result,
+                    String.format("Unable to save file %s in database", blob.getName()));
+            }
             return conversionService.createRequestJson();
         } else {
-            log.error("Raise snow request TODO");
-            serviceNowService.createServiceNowRequest(String.format("Unable to validate file %s against rota XML schema", blob.getName()),
-                                                      "XML file validation failed");
+            StringBuilder error = new StringBuilder();
+            error.append(String.format("Unable to validate file %s against rota XML schema", blob.getName()));
+            serviceNowService.createServiceNowRequest(error, "XML file validation failed");
             return Collections.emptyMap();
         }
     }
 
-    private void saveRotaJsonIntoDatabase(JsonNode json) {
-        handleJusticesToModel(json.get("magistrates").get("magistrate"));
-        handleJusticesToModel(json.get("districtJudges").get("districtJudge"));
-        handleLocationsToModel(json.get("locations").get("location"));
-        handleVenuesToModel(json.get("venues").get("venue"));
-        handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"));
-        handleSchedulesToModel(json.get("schedules").get("schedule"));
+    private StringBuilder saveRotaJsonIntoDatabase(JsonNode json) {
+        StringBuilder errors = new StringBuilder();
+        if (!handleJusticesToModel(json.get("magistrates").get("magistrate"))) {
+            errors.append("Unable to save magistrates in database");
+        }
+
+        if (!handleJusticesToModel(json.get("districtJudges").get("districtJudge"))) {
+            errors.append("Unable to save districtJudges in database");
+        }
+
+        if (!handleLocationsToModel(json.get("locations").get("location"))) {
+            errors.append("Unable to save locations in database");
+        }
+
+        if (!handleVenuesToModel(json.get("venues").get("venue"))) {
+            errors.append("Unable to save venues in database");
+        }
+
+        if (!handleCourtListingProfilesToModel(json.get("courtListingProfiles").get("courtListingProfile"))) {
+            errors.append("Unable to save courtListingProfiles in database");
+        }
+
+        if (!handleSchedulesToModel(json.get("schedules").get("schedule"))) {
+            errors.append("Unable to save schedules in database");
+        }
+
+        return errors;
     }
 
     /**
      * Take in the jsonNode for either magistrates or district judges, convert to a model and store in the database.
      * @param justiceJsonNode The justice jsonNode.
      */
-    private void handleJusticesToModel(JsonNode justiceJsonNode) {
+    private boolean handleJusticesToModel(JsonNode justiceJsonNode) {
         List<Justice> justices = new ArrayList<>();
+        AtomicBoolean saved = new AtomicBoolean(true);
         if (justiceJsonNode != null) {
             justiceJsonNode.forEach(justice -> {
                 try {
                     justices.add(mapper.treeToValue(justice, Justice.class));
                 } catch (JsonProcessingException ex) {
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                    saved.set(false);
                 }
             });
+            justiceRepository.saveAll(justices);
         }
-        justiceRepository.saveAll(justices);
+        return saved.get();
     }
 
     /**
      * Take in the location json node, convert to a model and store in the database.
      * @param locations The locations jsonNode.
      */
-    private void handleLocationsToModel(JsonNode locations) {
+    private boolean handleLocationsToModel(JsonNode locations) {
         List<Location> locationsList = new ArrayList<>();
+        AtomicBoolean saved = new AtomicBoolean(true);
         if (locations != null) {
             locations.forEach(location -> {
                 try {
                     locationsList.add(mapper.treeToValue(location, Location.class));
                 } catch (JsonProcessingException ex) {
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                    saved.set(false);
                 }
             });
             locationRepository.saveAll(locationsList);
         }
+        return saved.get();
     }
 
     /**
      * Take in the venue json node, convert to a model and store in the database.
      * @param venues The venues jsonNode.
      */
-    private void handleVenuesToModel(JsonNode venues) {
+    private boolean handleVenuesToModel(JsonNode venues) {
         List<Venue> venuesList = new ArrayList<>();
+        AtomicBoolean saved = new AtomicBoolean(true);
         if (venues != null) {
             venues.forEach(venue -> {
                 try {
                     venuesList.add(mapper.treeToValue(venue, Venue.class));
                 } catch (JsonProcessingException ex) {
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                    saved.set(false);
                 }
             });
             venueRepository.saveAll(venuesList);
         }
+        return saved.get();
     }
 
     /**
      * Take in the court listing profile json node, convert to a model and store in the database.
      * @param courtListingProfiles The court listing profile jsonNode.
      */
-    private void handleCourtListingProfilesToModel(JsonNode courtListingProfiles) {
+    private boolean handleCourtListingProfilesToModel(JsonNode courtListingProfiles) {
         List<CourtListingProfile> courtListingProfileList = new ArrayList<>();
+        AtomicBoolean saved = new AtomicBoolean(true);
         if (courtListingProfiles != null) {
             courtListingProfiles.forEach(courtListingProfile -> {
                 try {
@@ -185,36 +219,36 @@ public class ProcessingService {
                     ));
                 } catch (JsonProcessingException ex) {
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
+                    saved.set(false);
                 }
             });
             courtListingProfileRepository.saveAll(courtListingProfileList);
         }
+        return saved.get();
     }
 
     /**
      * Take in the schedules json node, convert to a model and store in the database.
      * @param schedules The schedules jsonNode.
      */
-    private void handleSchedulesToModel(JsonNode schedules) {
+    private boolean handleSchedulesToModel(JsonNode schedules) {
         List<Schedule> scheduleList = new ArrayList<>();
-        if (schedules != null) {
-            schedules.forEach(schedule -> scheduleList.add(new Schedule(
-                schedule.get("id").textValue(),
-                schedule.get("courtListingProfile").get("idref").textValue(),
-                schedule.get("justice").get("idref").textValue(),
-                schedule.get("slot").textValue()
-            )));
-            scheduleRepository.saveAll(scheduleList);
+        AtomicBoolean saved = new AtomicBoolean(true);
+        try {
+            if (schedules != null) {
+                schedules.forEach(schedule -> scheduleList.add(new Schedule(
+                    schedule.get("id").textValue(),
+                    schedule.get("courtListingProfile").get("idref").textValue(),
+                    schedule.get("justice").get("idref").textValue(),
+                    schedule.get("slot").textValue()
+                )));
+                scheduleRepository.saveAll(scheduleList);
+            }
+        } catch (Exception ex) {
+            log.error(EXCEPTION_MESSAGE, ex.getMessage());
+            saved.set(false);
         }
-    }
-
-    @Transactional
-    public void saveErrorMessage(String clpId, String errorMessage, String requestJson) {
-        courtListingProfileRepository.updateCourtListingProfileWithError(clpId, errorMessage, requestJson);
-        Optional<CourtListingProfile> clpObject = courtListingProfileRepository.findById(clpId);
-        if (clpObject.isPresent()) {
-
-        }
+        return saved.get();
     }
 
     private void moveFileToProcessingContainer(BlobItem blob) {

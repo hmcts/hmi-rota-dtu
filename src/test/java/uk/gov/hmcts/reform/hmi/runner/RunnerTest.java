@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -59,7 +60,7 @@ class RunnerTest {
                 RESPONSE_MESSAGE
             );
 
-            assertTrue(logCaptor.getInfoLogs().size() == 1,
+            assertEquals(1, logCaptor.getInfoLogs().size(),
                        "More info logs than expected"
             );
         }
@@ -79,7 +80,8 @@ class RunnerTest {
             testMap.put("test", "test-json-data");
 
             when(processingService.processFile(blobItem)).thenReturn(testMap);
-            when(distributionService.sendProcessedJson(any())).thenReturn(CompletableFuture.completedFuture(""));
+            when(distributionService.sendProcessedJson(any()))
+                .thenReturn(CompletableFuture.completedFuture("received successfully"));
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
 
             runner.run();
@@ -99,7 +101,7 @@ class RunnerTest {
                 RESPONSE_MESSAGE
             );
 
-            assertTrue(logCaptor.getInfoLogs().size() == 3,
+            assertEquals(3, logCaptor.getInfoLogs().size(),
                        "More info logs than expected"
             );
         }

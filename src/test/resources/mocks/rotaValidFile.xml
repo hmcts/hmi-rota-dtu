@@ -13,6 +13,12 @@
       <forenames>magistrate</forenames>
       <emailAddress>magistrate.tester@email.com</emailAddress>
     </magistrate>
+    <magistrate id="MA8126">
+      <title>Mr</title>
+      <surname>tester2</surname>
+      <forenames>magistrate2</forenames>
+      <emailAddress>magistrate2.tester@email.com</emailAddress>
+    </magistrate>
   </magistrates>
   <districtJudges>
     <districtJudge id="DJ156">

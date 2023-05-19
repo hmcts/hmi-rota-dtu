@@ -69,14 +69,4 @@ public class CourtListingProfile {
      * The id of the venue.
      */
     private String venueId;
-
-    /**
-     * The requestJson for HMI.
-     */
-    private String requestJson;
-
-    /**
-     * The errorMessage if HMI request fails.
-     */
-    private String errorMessage;
 }

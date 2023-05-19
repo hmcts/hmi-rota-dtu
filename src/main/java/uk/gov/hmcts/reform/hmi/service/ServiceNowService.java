@@ -23,7 +23,6 @@ public class ServiceNowService {
     private final String callerId;
     private final String serviceOffering;
     private final String roleType;
-
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     public ServiceNowService(@Value("${service-now.sn_url}") String url,
@@ -43,7 +42,7 @@ public class ServiceNowService {
         this.roleType = roleType;
     }
 
-    public boolean createServiceNowRequest(String errorDescription, String shortDescription)
+    public boolean createServiceNowRequest(StringBuilder errorDescription, String shortDescription)
         throws JsonProcessingException {
         try {
             String response = this.webClient.post().uri(url)
@@ -53,20 +52,24 @@ public class ServiceNowService {
                 .body(BodyInserters.fromValue(formatBody(errorDescription, shortDescription))).retrieve()
                 .bodyToMono(String.class).block();
             log.info("ServiceNow ticket has been created");
-            return response.contains("INC");
+            if (response != null) {
+                return response.contains("INC");
+            }
+            return false;
         } catch (WebClientException ex) {
             log.error("Error while create ServiceNow ticket:", ex.getMessage());
             return false;
         }
     }
 
-    private String formatBody(String errorDescription, String shortDescription) throws JsonProcessingException {
+    private String formatBody(StringBuilder errorDescription, String shortDescription)
+        throws JsonProcessingException {
         ObjectNode body = MAPPER.createObjectNode();
         (body).put("assignment_group", this.assignmentGroup);
         (body).put("caller_id", this.callerId);
         (body).put("category", "Data Issue");
         (body).put("contact_type", "Alert");
-        (body).put("description", errorDescription);
+        (body).put("description", errorDescription.toString());
         (body).put("impact", "2");
         (body).put("service_offering", this.serviceOffering);
         (body).put("short_description", shortDescription);

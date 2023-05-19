@@ -51,7 +51,7 @@ class DistributionServiceTest {
 
     @Test
     void testSendProcessedJsonFailed() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.BAD_REQUEST.value()));
+        mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.SERVICE_UNAVAILABLE.value()));
 
         distributionService.sendProcessedJson("Test json data string");
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),

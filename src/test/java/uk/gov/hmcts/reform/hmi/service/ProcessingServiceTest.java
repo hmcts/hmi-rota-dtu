@@ -61,6 +61,9 @@ class ProcessingServiceTest {
     @Mock
     ScheduleRepository scheduleRepository;
 
+    @Mock
+    ServiceNowService serviceNowService;
+
     @InjectMocks
     private ProcessingService processingService;
 
@@ -109,6 +112,7 @@ class ProcessingServiceTest {
         when(azureBlobService.downloadBlob(TEST)).thenReturn(testDataBytes);
         when(validationConfiguration.getRotaHmiXsd()).thenReturn("PATH");
         when(validationService.isValid(any(), any())).thenReturn(false);
+        when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
 
         BlobItem blobItem = new BlobItem();
         blobItem.setName(TEST);
