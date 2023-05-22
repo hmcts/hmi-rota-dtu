@@ -74,4 +74,14 @@ class ServiceNowServiceTest {
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error while create ServiceNow ticket:"),
                    "Error logs did not contain message");
     }
+
+    @Test
+    void testCreateServiceNowReturnNull() throws JsonProcessingException {
+        mockWebServerEndpoint.enqueue(new MockResponse());
+
+        boolean result = serviceNowService.createServiceNowRequest(new StringBuilder(), "");
+        assertFalse(result, "Did not receive expected result");
+        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error while create ServiceNow ticket"),
+                   "Info log did not contain message");
+    }
 }

@@ -68,4 +68,14 @@ class DistributionServiceTest {
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
                    "Error logs did not contain message");
     }
+
+    @Test
+    void testSendProcessedJsonHmiFailedException() {
+        mockWebServerEndpoint.enqueue(new MockResponse().setStatus(HttpStatus.BAD_REQUEST.name())
+                                          .setBody("Invalid header"));
+
+        distributionService.sendProcessedJson(TEST_DATA);
+        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
+                   "Error logs did not contain message");
+    }
 }
