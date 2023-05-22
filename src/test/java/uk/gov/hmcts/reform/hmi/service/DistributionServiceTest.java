@@ -27,6 +27,8 @@ class DistributionServiceTest {
 
     DistributionService distributionService;
 
+    private static final String TEST_DATA = "Test json data string";
+
     @BeforeEach
     void setup() throws IOException {
         WebClient webClient = WebClient.create();
@@ -42,9 +44,9 @@ class DistributionServiceTest {
 
     @Test
     void testSendProcessedJson() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setBody("Test json data string"));
+        mockWebServerEndpoint.enqueue(new MockResponse().setBody(TEST_DATA));
 
-        distributionService.sendProcessedJson("Test json data string");
+        distributionService.sendProcessedJson(TEST_DATA);
         assertTrue(logCaptor.getInfoLogs().get(0).contains("Json data has been sent"),
                    "Info log did not contain message");
     }
@@ -53,7 +55,16 @@ class DistributionServiceTest {
     void testSendProcessedJsonFailed() {
         mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.SERVICE_UNAVAILABLE.value()));
 
-        distributionService.sendProcessedJson("Test json data string");
+        distributionService.sendProcessedJson(TEST_DATA);
+        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
+                   "Error logs did not contain message");
+    }
+
+    @Test
+    void testSendProcessedJsonHmiFailed() {
+        mockWebServerEndpoint.enqueue(new MockResponse().setStatus(HttpStatus.BAD_REQUEST.name()));
+
+        distributionService.sendProcessedJson(TEST_DATA);
         assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
                    "Error logs did not contain message");
     }
