@@ -126,6 +126,33 @@ class RunnerTest {
 
             when(processingService.processFile(blobItem)).thenReturn(testMap);
             when(distributionService.sendProcessedJson(any()))
+                .thenReturn(CompletableFuture.completedFuture("source header is missing"));
+            when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
+            when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
+
+            runner.run();
+            assertTrue(
+                logCaptor.getInfoLogs().get(2).contains("Blob failed"),
+                RESPONSE_MESSAGE
+            );
+        }
+    }
+
+    @Test
+    void testRunnerWithEligibleBlobFailedHmiRequest() throws IOException, SAXException {
+        try (LogCaptor logCaptor = LogCaptor.forClass(Runner.class)) {
+            BlobItem blobItem = new BlobItem();
+            blobItem.setName(TEST);
+            BlobItemProperties blobItemProperties = new BlobItemProperties();
+            blobItemProperties.setLeaseStatus(LeaseStatusType.UNLOCKED);
+            blobItem.setProperties(blobItemProperties);
+            when(azureBlobService.getBlobs()).thenReturn(List.of(blobItem));
+
+            Map<String, String> testMap = new ConcurrentHashMap<>();
+            testMap.put("test", "test-json-data");
+
+            when(processingService.processFile(blobItem)).thenReturn(testMap);
+            when(distributionService.sendProcessedJson(any()))
                 .thenReturn(null);
             when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
