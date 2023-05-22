@@ -13,7 +13,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("PMD.LawOfDemeter")
@@ -61,21 +64,11 @@ class DistributionServiceTest {
     }
 
     @Test
-    void testSendProcessedJsonHmiFailed() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setStatus(HttpStatus.BAD_REQUEST.name()));
+    void testSendProcessedJsonHmiFailed() throws ExecutionException, InterruptedException {
+        mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.BAD_REQUEST.value()));
 
-        distributionService.sendProcessedJson(TEST_DATA);
-        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
-                   "Error logs did not contain message");
-    }
-
-    @Test
-    void testSendProcessedJsonHmiFailedException() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setStatus(HttpStatus.BAD_REQUEST.name())
-                                          .setBody("Invalid header"));
-
-        distributionService.sendProcessedJson(TEST_DATA);
-        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
+        Future<String> response = distributionService.sendProcessedJson(TEST_DATA);
+        assertEquals(null, response.get(),
                    "Error logs did not contain message");
     }
 }
