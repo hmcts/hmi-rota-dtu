@@ -37,7 +37,7 @@ public class DistributionService {
             String apiResponse = webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
-                .header("Destination-System", "MOCK")
+                .header("Destination-System", "SNL")
                 .header("Request-Created-At", simpleDateFormat.format(new Date()))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
