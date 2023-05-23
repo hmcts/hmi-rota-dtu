@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientException;
 
-import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.clientRegistrationId;
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
 @Slf4j
@@ -46,7 +45,6 @@ public class ServiceNowService {
         throws JsonProcessingException {
         try {
             String response = this.webClient.post().uri(url)
-                .attributes(clientRegistrationId("hmiApim"))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(formatBody(errorDescription, shortDescription))).retrieve()

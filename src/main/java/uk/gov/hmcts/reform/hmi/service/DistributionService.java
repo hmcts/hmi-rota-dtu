@@ -34,7 +34,7 @@ public class DistributionService {
     @Async
     public Future<String> sendProcessedJson(String jsonData) {
         try {
-            String apiResponse = webClient.post().uri(url + "/schedules")
+            Future<String> apiResponse = webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
                 .header("Destination-System", "SNL")
@@ -47,10 +47,9 @@ public class DistributionService {
                     HttpStatus.BAD_REQUEST::equals,
                     response -> response.bodyToMono(String.class).map(Exception::new))
                 .bodyToMono(String.class)
-                .toFuture()
-                .get();
-            log.info("Json data has been sent");
-            return CompletableFuture.completedFuture(apiResponse);
+                .toFuture();
+            log.info(String.format("Json data has been sent with response: %s", apiResponse.get()));
+            return apiResponse;
         } catch (Exception ex) { //NOSONAR
             log.error("Error response from HMI APIM:", ex.getMessage());
             return CompletableFuture.completedFuture(ex.getMessage());
