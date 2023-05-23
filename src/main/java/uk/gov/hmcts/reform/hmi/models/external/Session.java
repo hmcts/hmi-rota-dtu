@@ -16,11 +16,6 @@ public class Session {
     private Location room;
 
     /**
-     * If Session in CLP table is AM, duration will be 180, otherwise 120.
-     */
-    private Integer sessionDuration;
-
-    /**
      * ID from the CLP table.
      */
     private String sessionReference;
