@@ -85,7 +85,6 @@ public class ConversionService {
         Optional<CourtListingProfile> courtListingProfile = courtListingProfileRepository.findById(clpId);
         if (courtListingProfile.isPresent()) {
             session.setRoom(formatLocation(courtListingProfile.get(), true));
-            session.setSessionDuration(calculateSessionDuration(courtListingProfile.get()));
             session.setSessionReference(courtListingProfile.get().getId());
             session.setSessionStart(calculateSessionStartTime(courtListingProfile.get()));
             session.setVenue(formatLocation(courtListingProfile.get(), false));
@@ -110,14 +109,6 @@ public class ConversionService {
         }
 
         return new Location(courtListingProfile.getLocationId(), LocationType.COURT.label);
-    }
-
-    private Integer calculateSessionDuration(CourtListingProfile courtListingProfile) {
-        if ("AM".equals(courtListingProfile.getSession())) {
-            return 180;
-        }
-
-        return 120;
     }
 
     private String calculateSessionStartTime(CourtListingProfile courtListingProfile) {
