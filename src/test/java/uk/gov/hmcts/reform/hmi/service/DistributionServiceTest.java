@@ -13,7 +13,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SuppressWarnings("PMD.LawOfDemeter")
@@ -26,6 +29,8 @@ class DistributionServiceTest {
     LogCaptor logCaptor = LogCaptor.forClass(DistributionService.class);
 
     DistributionService distributionService;
+
+    private static final String TEST_DATA = "Test json data string";
 
     @BeforeEach
     void setup() throws IOException {
@@ -42,19 +47,28 @@ class DistributionServiceTest {
 
     @Test
     void testSendProcessedJson() {
-        mockWebServerEndpoint.enqueue(new MockResponse().setBody("Test json data string"));
+        mockWebServerEndpoint.enqueue(new MockResponse().setBody(TEST_DATA));
 
-        distributionService.sendProcessedJson("Test json data string");
+        distributionService.sendProcessedJson(TEST_DATA);
         assertTrue(logCaptor.getInfoLogs().get(0).contains("Json data has been sent"),
                    "Info log did not contain message");
     }
 
     @Test
     void testSendProcessedJsonFailed() {
+        mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.SERVICE_UNAVAILABLE.value()));
+
+        distributionService.sendProcessedJson(TEST_DATA);
+        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
+                   "Error logs did not contain message");
+    }
+
+    @Test
+    void testSendProcessedJsonHmiFailed() throws ExecutionException, InterruptedException {
         mockWebServerEndpoint.enqueue(new MockResponse().setResponseCode(HttpStatus.BAD_REQUEST.value()));
 
-        distributionService.sendProcessedJson("Test json data string");
-        assertTrue(logCaptor.getErrorLogs().get(0).contains("Error response from HMI APIM:"),
+        Future<String> response = distributionService.sendProcessedJson(TEST_DATA);
+        assertEquals(null, response.get(),
                    "Error logs did not contain message");
     }
 }

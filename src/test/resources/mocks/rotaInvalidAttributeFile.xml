@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <rotaSchedule xmlns="http://com.moj.mcr.rota/v1/">
   <rotaPeriod>
-    <justiceAreaType>LJA</justiceAreaType>
-    <justiceAreaName>Berkshire</justiceAreaName>
-    <startDate>2023-04-01</startDate>
+    <justiceAareaType>LJA</justiceAareaType>
+    <justiceAareaName>Berkshire</justiceAareaName>
+    <startDaate>2023-04-01</startDaate>
     <endDate>2023-09-30</endDate>
   </rotaPeriod>
   <magistrates>
     <magistrate id="MA8125">
-      <title>Mr</title>
-      <surname>tester</surname>
+      <tittle>Mr</tittle>
+      <surnname>tester</surnname>
       <forenames>magistrate</forenames>
       <emailAddress>magistrate.tester@email.com</emailAddress>
     </magistrate>
@@ -23,9 +23,9 @@
   <districtJudges>
     <districtJudge id="DJ156">
       <title></title>
-      <surname>JosephaTS</surname>
-      <forenames>OctaviusTS</forenames>
-      <emailAddress>octaviusts.josephats@rotaemail.com</emailAddress>
+      <surnaame>JosephaTS</surnaame>
+      <forenaames>OctaviusTS</forenaames>
+      <emailAaddress>octaviusts.josephats@rotaemail.com</emailAaddress>
     </districtJudge>
     <districtJudge id="DJ413">
       <title></title>
@@ -36,8 +36,8 @@
   </districtJudges>
   <locations>
     <location>
-      <locationId>77</locationId>
-      <name>Reading MC</name>
+      <locaationId>77</locaationId>
+      <naame>Reading MC</naame>
     </location>
     <location>
       <locationId>79</locationId>
@@ -50,58 +50,18 @@
   </locations>
   <venues>
     <venue>
-      <venueId>42580</venueId>
-      <name>Court 5</name>
+      <venueeId>42580</venueeId>
+      <namee>Court 5</namee>
     </venue>
     <venue>
       <venueId>42579</venueId>
       <name>Court 6</name>
     </venue>
-    <venue>
-      <venueId>42578</venueId>
-      <name>Court 8</name>
-    </venue>
-    <venue>
-      <venueId>42577</venueId>
-      <name>Court 4</name>
-    </venue>
-    <venue>
-      <venueId>42582</venueId>
-      <name>SJP</name>
-    </venue>
-    <venue>
-      <venueId>42584</venueId>
-      <name>Court 2</name>
-    </venue>
-    <venue>
-      <venueId>42585</venueId>
-      <name>SJP</name>
-    </venue>
-    <venue>
-      <venueId>42581</venueId>
-      <name>Court 1</name>
-    </venue>
-    <venue>
-      <venueId>42583</venueId>
-      <name>Court 1</name>
-    </venue>
-    <venue>
-      <venueId>42799</venueId>
-      <name>Reading Crown</name>
-    </venue>
-    <venue>
-      <venueId>44033</venueId>
-      <name>Reading Crown</name>
-    </venue>
-    <venue>
-      <venueId>43241</venueId>
-      <name>Search Warrants</name>
-    </venue>
   </venues>
   <courtListingProfiles>
     <courtListingProfile id="CS4035951">
-      <sessionDate>2023-04-10</sessionDate>
-      <session>PM</session>
+      <sessionnDate>2023-04-10</sessionnDate>
+      <sessionn>PM</sessionn>
       <panel>ADULT</panel>
       <business>APP</business>
       <venueId>42580</venueId>
