@@ -21,14 +21,17 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 @Service
 public class DistributionService {
 
-    private final String url;
     private final WebClient webClient;
+    private final String url;
+    private final String destinationSystem;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
                                                                            new Locale("eng", "GB"));
 
-    public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url) {
+    public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url,
+                               @Value("${destination-system}") String destinationSystem) {
         this.webClient = webClient;
         this.url = url;
+        this.destinationSystem = destinationSystem;
     }
 
     @Async
@@ -37,7 +40,7 @@ public class DistributionService {
             Future<String> apiResponse = webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
-                .header("Destination-System", "SNL")
+                .header("Destination-System", destinationSystem)
                 .header("Request-Created-At", simpleDateFormat.format(new Date()))
                 .header("Content-Type", "application/json")
                 .header("Accept", "application/json")
