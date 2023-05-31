@@ -35,7 +35,7 @@ class DistributionServiceTest {
     @BeforeEach
     void setup() throws IOException {
         WebClient webClient = WebClient.create();
-        distributionService = new DistributionService(webClient, "http://localhost:1234");
+        distributionService = new DistributionService(webClient, "http://localhost:1234", "MOCK");
         mockWebServerEndpoint = new MockWebServer();
         mockWebServerEndpoint.start(1234);
     }
