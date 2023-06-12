@@ -31,18 +31,20 @@ public class DistributionService {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
                                                                            new Locale("eng", "GB"));
 
-    private final RateLimiter rateLimiter = RateLimiter.of("hmi-rate-limiter", RateLimiterConfig
-        .custom()
-        .limitRefreshPeriod(Duration.ofMinutes(1))
-        .limitForPeriod(200)
-        .timeoutDuration(Duration.ofMinutes(1))
-        .build());
+    private final RateLimiter rateLimiter;
 
     public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url,
-                               @Value("${destination-system}") String destinationSystem) {
+                               @Value("${destination-system}") String destinationSystem,
+                               @Value("${request-limit}") int requestLimit) {
         this.webClient = webClient;
         this.url = url;
         this.destinationSystem = destinationSystem;
+        this.rateLimiter = RateLimiter.of("hmi-rate-limiter", RateLimiterConfig
+            .custom()
+            .limitRefreshPeriod(Duration.ofMinutes(1))
+            .limitForPeriod(requestLimit)
+            .timeoutDuration(Duration.ofMinutes(1))
+            .build());
     }
 
     @Async
