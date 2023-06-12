@@ -5,8 +5,10 @@ import com.azure.storage.blob.models.LeaseStatusType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.xml.sax.SAXException;
+import uk.gov.hmcts.reform.hmi.models.ApiResponse;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 import uk.gov.hmcts.reform.hmi.service.ProcessingService;
@@ -54,10 +56,12 @@ public class Runner implements CommandLineRunner {
 
             //Process the selected blob
             processingService.processFile(blob).forEach((key, value) -> {
-                Future<String> response = distributionService.sendProcessedJson(value);
-                String responseStatus = null;
+                Future<ApiResponse> response = distributionService.sendProcessedJson(value);
+                Integer responseStatus = null;
+                String responseMessage = null;
                 try {
-                    responseStatus = response.get();
+                    responseStatus = response.get().getStatusCode();
+                    responseMessage = response.get().getMessage();
                 } catch (InterruptedException | ExecutionException | NullPointerException e) {
                     log.error("Async issue");
                     formatErrorResponse(responseErrors, key, "Async issue while process this request");
@@ -65,9 +69,9 @@ public class Runner implements CommandLineRunner {
                 }
 
                 if (responseStatus != null
-                        && !responseStatus.contains("received successfully")) {
+                        && !responseStatus.equals(HttpStatus.OK.value())) {
                     log.info("Blob failed");
-                    formatErrorResponse(responseErrors, key, responseStatus);
+                    formatErrorResponse(responseErrors, key, responseMessage);
                 }
             });
 

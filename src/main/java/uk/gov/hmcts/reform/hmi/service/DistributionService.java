@@ -8,6 +8,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
+import uk.gov.hmcts.reform.hmi.models.ApiResponse;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +21,7 @@ import static org.springframework.security.oauth2.client.web.reactive.function.c
 
 @Slf4j
 @Service
+@SuppressWarnings("PMD.LawOfDemeter")
 public class DistributionService {
 
     private final WebClient webClient;
@@ -35,9 +38,9 @@ public class DistributionService {
     }
 
     @Async
-    public Future<String> sendProcessedJson(String jsonData) {
+    public Future<ApiResponse> sendProcessedJson(String jsonData) {
         try {
-            Future<String> apiResponse = webClient.post().uri(url + "/schedules")
+            String apiResponse = webClient.post().uri(url + "/schedules")
                 .attributes(clientRegistrationId("hmiApim"))
                 .header("Source-System", "CRIME")
                 .header("Destination-System", destinationSystem)
@@ -46,16 +49,15 @@ public class DistributionService {
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(jsonData))
                 .retrieve()
-                .onStatus(
-                    HttpStatus.BAD_REQUEST::equals,
-                    response -> response.bodyToMono(String.class).map(Exception::new))
                 .bodyToMono(String.class)
-                .toFuture();
-            log.info(String.format("Json data has been sent with response: %s", apiResponse.get()));
-            return apiResponse;
-        } catch (Exception ex) { //NOSONAR
-            log.error("Error response from HMI APIM:", ex.getMessage());
-            return CompletableFuture.completedFuture(ex.getMessage());
+                .block();
+            log.info(String.format("Json data has been sent with response: %s", apiResponse));
+            return CompletableFuture.completedFuture(new ApiResponse(HttpStatus.OK.value(), apiResponse));
+        } catch (WebClientResponseException ex) {
+            log.error(String.format("Error response from HMI APIM: %s Status code: %s", ex.getResponseBodyAsString(),
+                                    ex.getStatusCode().value()));
+            return CompletableFuture.completedFuture(new ApiResponse(ex.getStatusCode().value(),
+                                                                     ex.getResponseBodyAsString()));
         }
     }
 }
