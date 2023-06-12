@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmi.service;
 
+import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.ratelimiter.RateLimiterConfig;
+import io.github.resilience4j.reactor.ratelimiter.operator.RateLimiterOperator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +13,7 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -26,6 +30,13 @@ public class DistributionService {
     private final String destinationSystem;
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
                                                                            new Locale("eng", "GB"));
+
+    private final RateLimiter rateLimiter = RateLimiter.of("hmi-rate-limiter", RateLimiterConfig
+        .custom()
+        .limitRefreshPeriod(Duration.ofMinutes(1))
+        .limitForPeriod(200)
+        .timeoutDuration(Duration.ofMinutes(1))
+        .build());
 
     public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url,
                                @Value("${destination-system}") String destinationSystem) {
@@ -50,6 +61,7 @@ public class DistributionService {
                     HttpStatus.BAD_REQUEST::equals,
                     response -> response.bodyToMono(String.class).map(Exception::new))
                 .bodyToMono(String.class)
+                .transformDeferred(RateLimiterOperator.of(rateLimiter))
                 .toFuture();
             log.info(String.format("Json data has been sent with response: %s", apiResponse.get()));
             return apiResponse;
