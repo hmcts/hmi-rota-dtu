@@ -62,8 +62,8 @@ public class DistributionService {
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(jsonData))
                 .retrieve()
-                .transformDeferred(RateLimiterOperator.of(rateLimiter))
                 .bodyToMono(String.class)
+                .transformDeferred(RateLimiterOperator.of(rateLimiter))
                 .block();
             log.info(String.format("Json data has been sent with response: %s", apiResponse));
             return CompletableFuture.completedFuture(new ApiResponse(HttpStatus.OK.value(), apiResponse));
@@ -71,6 +71,7 @@ public class DistributionService {
             log.error(String.format("Error response from HMI APIM: %s Status code: %s", ex.getResponseBodyAsString(),
                                     ex.getStatusCode().value()));
             return CompletableFuture.completedFuture(new ApiResponse(ex.getStatusCode().value(),
+                ex.getResponseBodyAsString()));
         }
     }
 }
