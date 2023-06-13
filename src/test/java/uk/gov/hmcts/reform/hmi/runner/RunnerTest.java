@@ -9,7 +9,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 import org.xml.sax.SAXException;
+import uk.gov.hmcts.reform.hmi.models.ApiResponse;
 import uk.gov.hmcts.reform.hmi.service.AzureBlobService;
 import uk.gov.hmcts.reform.hmi.service.DistributionService;
 import uk.gov.hmcts.reform.hmi.service.ProcessingService;
@@ -27,6 +29,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
+@SuppressWarnings("PMD.LawOfDemeter")
 class RunnerTest {
 
     @Mock
@@ -85,7 +88,8 @@ class RunnerTest {
 
             when(processingService.processFile(blobItem)).thenReturn(testMap);
             when(distributionService.sendProcessedJson(any()))
-                .thenReturn(CompletableFuture.completedFuture("received successfully"));
+                .thenReturn(CompletableFuture.completedFuture(
+                    new ApiResponse(HttpStatus.OK.value(),"received successfully")));
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
 
             runner.run();
@@ -126,7 +130,8 @@ class RunnerTest {
 
             when(processingService.processFile(blobItem)).thenReturn(testMap);
             when(distributionService.sendProcessedJson(any()))
-                .thenReturn(CompletableFuture.completedFuture("source header is missing"));
+                .thenReturn(CompletableFuture.completedFuture(
+                    new ApiResponse(HttpStatus.BAD_REQUEST.value(), "source header is missing")));
             when(serviceNowService.createServiceNowRequest(any(), any())).thenReturn(true);
             when(azureBlobService.deleteProcessingBlob(TEST)).thenReturn("fileDeleted");
 
