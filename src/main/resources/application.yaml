@@ -58,3 +58,4 @@ validations:
   rota-hmi-xsd: "schemas/rota-hmi-interface.xsd"
 
 destination-system: ${DESTINATION_SYSTEM:SNL}
+request-limit: ${REQUEST_LIMIT:200}

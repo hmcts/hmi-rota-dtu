@@ -1,5 +1,8 @@
 package uk.gov.hmcts.reform.hmi.service;
 
+import io.github.resilience4j.ratelimiter.RateLimiter;
+import io.github.resilience4j.ratelimiter.RateLimiterConfig;
+import io.github.resilience4j.reactor.ratelimiter.operator.RateLimiterOperator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import uk.gov.hmcts.reform.hmi.models.ApiResponse;
 
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.CompletableFuture;
@@ -30,11 +34,20 @@ public class DistributionService {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssXXX",
                                                                            new Locale("eng", "GB"));
 
+    private final RateLimiter rateLimiter;
+
     public DistributionService(@Autowired WebClient webClient,  @Value("${service-to-service.hmi-apim}") String url,
-                               @Value("${destination-system}") String destinationSystem) {
+                               @Value("${destination-system}") String destinationSystem,
+                               @Value("${request-limit}") int requestLimit) {
         this.webClient = webClient;
         this.url = url;
         this.destinationSystem = destinationSystem;
+        this.rateLimiter = RateLimiter.of("hmi-rate-limiter", RateLimiterConfig
+            .custom()
+            .limitRefreshPeriod(Duration.ofMinutes(1))
+            .limitForPeriod(requestLimit)
+            .timeoutDuration(Duration.ofMinutes(1))
+            .build());
     }
 
     @Async
@@ -49,6 +62,7 @@ public class DistributionService {
                 .header("Accept", "application/json")
                 .body(BodyInserters.fromValue(jsonData))
                 .retrieve()
+                .transformDeferred(RateLimiterOperator.of(rateLimiter))
                 .bodyToMono(String.class)
                 .block();
             log.info(String.format("Json data has been sent with response: %s", apiResponse));
@@ -57,7 +71,6 @@ public class DistributionService {
             log.error(String.format("Error response from HMI APIM: %s Status code: %s", ex.getResponseBodyAsString(),
                                     ex.getStatusCode().value()));
             return CompletableFuture.completedFuture(new ApiResponse(ex.getStatusCode().value(),
-                                                                     ex.getResponseBodyAsString()));
         }
     }
 }
