@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientException;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 import static org.springframework.web.reactive.function.client.ExchangeFilterFunctions.basicAuthentication;
 
@@ -51,13 +51,14 @@ public class ServiceNowService {
                 .bodyToMono(String.class).block();
             if (response != null
                 && response.contains("INC")) {
-                log.info("ServiceNow ticket has been created");
+                log.info(String.format("ServiceNow ticket has been created: %s", response));
                 return true;
             }
             log.error("Error while create ServiceNow ticket");
             return false;
-        } catch (WebClientException ex) {
-            log.error("Error while create ServiceNow ticket:", ex.getMessage());
+        } catch (WebClientResponseException ex) {
+            log.error(String.format("Error while create ServiceNow ticket: %s Status code: %s",
+                                    ex.getResponseBodyAsString(), ex.getStatusCode().value()));
             return false;
         }
     }
