@@ -39,8 +39,11 @@ spring:
 azure:
   blob:
     connection-string: ${CONNECTION_STRING}
+    storage-account-name: ${STORAGE_ACCOUNT_NAME}
     rota-container-name: rota
     processing-container-name: processing
+  managed-identity:
+    client-id: ${MANAGED_IDENTITY_CLIENT_ID}
 
 service-to-service:
   hmi-apim: ${HMI_APIM}
