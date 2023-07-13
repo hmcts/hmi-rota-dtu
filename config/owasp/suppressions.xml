@@ -42,6 +42,18 @@
     <notes>Bug in springframework. Will need to update springboot</notes>
     <cve>CVE-2023-20863</cve>
   </suppress>
+  <suppress>
+    <notes>Tomcat bug</notes>
+    <cve>CVE-2023-34981</cve>
+  </suppress>
+  <suppress>
+    <notes>Bug in netty.</notes>
+    <cve>CVE-2023-34462</cve>
+  </suppress>
+  <suppress>
+    <notes>Bug in jackson</notes>
+    <cve>CVE-2023-35116</cve>
+  </suppress>
 
   <!--End of temporary suppression section -->
 </suppressions>
