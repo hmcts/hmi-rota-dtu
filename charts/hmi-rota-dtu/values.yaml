@@ -7,7 +7,7 @@ function:
       resourceGroup: hmi-sharedinfra-{{ .Values.global.environment }}-rg
       usePodIdentity: true
       secrets:
-        - name: storage-account-name
+        - name: sa-name
           alias: STORAGE_ACCOUNT_NAME
         - name: app-insights-rota-dtu-connection-string
           alias: AZURE_APPLICATIONINSIGHTS_CONNECTION_STRING
