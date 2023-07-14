@@ -35,6 +35,8 @@ function:
           alias: SN_SERVICE_OFFERING
         - name: sn-role-type
           alias: SN_ROLE_TYPE
+        - name: mi-id
+          alias: MANAGED_IDENTITY_CLIENT_ID
 
   scaleType: Job
   triggerAuth:
