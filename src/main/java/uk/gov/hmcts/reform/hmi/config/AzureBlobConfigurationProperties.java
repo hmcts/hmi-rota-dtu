@@ -20,6 +20,11 @@ public class AzureBlobConfigurationProperties {
     private String connectionString;
 
     /**
+     * The name of the storage account containing the blob.
+     */
+    private String storageAccountName;
+
+    /**
      * The name of the rota container to connect to.
      */
     private String rotaContainerName;
@@ -28,5 +33,4 @@ public class AzureBlobConfigurationProperties {
      * The name of the processing container to connect to.
      */
     private String processingContainerName;
-
 }
