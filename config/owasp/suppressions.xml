@@ -54,6 +54,11 @@
     <notes>Bug in jackson</notes>
     <cve>CVE-2023-35116</cve>
   </suppress>
+  <suppress>
+    <notes>Bug in spring security</notes>
+    <cve>CVE-2023-34034</cve>
+    <cve>CVE-2023-34035</cve>
+  </suppress>
 
   <!--End of temporary suppression section -->
 </suppressions>
