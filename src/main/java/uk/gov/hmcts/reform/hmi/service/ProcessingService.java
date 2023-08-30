@@ -216,10 +216,13 @@ public class ProcessingService {
         if (courtListingProfiles != null) {
             courtListingProfiles.forEach(courtListingProfile -> {
                 try {
-                    courtListingProfileList.add(mapper.treeToValue(
-                        courtListingProfile,
-                        CourtListingProfile.class
-                    ));
+                    JsonNode businessNode = courtListingProfile.get("business");
+                    if (businessNode != null && "CRC".equals(businessNode.asText())) {
+                        courtListingProfileList.add(mapper.treeToValue(
+                            courtListingProfile,
+                            CourtListingProfile.class
+                        ));
+                    }
                 } catch (JsonProcessingException ex) {
                     log.error(EXCEPTION_MESSAGE, ex.getMessage());
                     saved.set(false);

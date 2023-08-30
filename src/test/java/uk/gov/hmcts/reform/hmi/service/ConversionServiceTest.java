@@ -11,10 +11,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
 import uk.gov.hmcts.reform.hmi.database.CourtListingProfileRepository;
 import uk.gov.hmcts.reform.hmi.database.JusticeRepository;
+import uk.gov.hmcts.reform.hmi.database.LocationRepository;
 import uk.gov.hmcts.reform.hmi.database.ScheduleRepository;
+import uk.gov.hmcts.reform.hmi.database.VenueRepository;
 import uk.gov.hmcts.reform.hmi.models.CourtListingProfile;
 import uk.gov.hmcts.reform.hmi.models.Justice;
+import uk.gov.hmcts.reform.hmi.models.Location;
 import uk.gov.hmcts.reform.hmi.models.Schedule;
+import uk.gov.hmcts.reform.hmi.models.Venue;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,6 +45,12 @@ class ConversionServiceTest {
 
     @Mock
     private JusticeRepository justiceRepository;
+
+    @Mock
+    private VenueRepository venueRepository;
+
+    @Mock
+    private LocationRepository locationRepository;
 
     @Mock
     private CourtListingProfileRepository courtListingProfileRepository;
@@ -78,7 +88,7 @@ class ConversionServiceTest {
     }
 
     @Test
-    void tesCreateRequestJson() {
+    void testCreateRequestJson() {
         List<String> uniqueClpIds = new ArrayList<>();
         uniqueClpIds.add(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.getUniqueClpIds()).thenReturn(uniqueClpIds);
@@ -102,11 +112,22 @@ class ConversionServiceTest {
         courtListingProfile.setSessionDate(LocalDate.now());
         courtListingProfile.setPanel("ADULT");
         courtListingProfile.setBusiness("APP");
-        courtListingProfile.setLocationId("LOC1");
-        courtListingProfile.setVenueId("VEN1");
+        courtListingProfile.setLocationId("1");
+        courtListingProfile.setVenueId("1");
 
         when(courtListingProfileRepository.findById(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(courtListingProfile));
+
+        Venue venue = new Venue();
+        venue.setId(1);
+        venue.setName("Test venue name");
+
+        when(venueRepository.findById(1)).thenReturn(Optional.of(venue));
+
+        Location location = new Location();
+        location.setId(1);
+        location.setName("Test location name");
+        when(locationRepository.findById(1)).thenReturn(Optional.of(location));
 
         Map<String, String> requestsJson = conversionService.createRequestJson();
         assertFalse(requestsJson.isEmpty(), EXPECTED_MESSAGE);
