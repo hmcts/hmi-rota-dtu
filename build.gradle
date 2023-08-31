@@ -207,7 +207,7 @@ dependencies {
 
   implementation group: 'io.rest-assured', name: 'rest-assured'
 
-  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.22.0'
+  implementation group: 'com.azure', name: 'azure-storage-blob', version: '12.23.1'
 
   implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
