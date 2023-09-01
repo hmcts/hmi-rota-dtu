@@ -217,7 +217,7 @@ public class ProcessingService {
             courtListingProfiles.forEach(courtListingProfile -> {
                 try {
                     JsonNode businessNode = courtListingProfile.get("business");
-                    if (businessNode != null && "CRC".equals(businessNode.asText())) {
+                    if (businessNode != null && !"CRC".equals(businessNode.asText())) {
                         courtListingProfileList.add(mapper.treeToValue(
                             courtListingProfile,
                             CourtListingProfile.class
