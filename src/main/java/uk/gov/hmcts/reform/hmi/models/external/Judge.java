@@ -29,6 +29,9 @@ public class Judge {
     public Judge(String johId, String slot) {
         this.johId = johId;
         this.slot = slot;
-        this.isPresiding = "CHAIR".equals(slot);
+        this.isPresiding = switch (slot) {
+            case "CHAIR", "SINGLE_JUSTICE", "DISTRICT_JUDGE" -> true;
+            default -> false;
+        };
     }
 }
