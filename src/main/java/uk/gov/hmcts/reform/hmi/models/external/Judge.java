@@ -21,7 +21,7 @@ public class Judge {
     private String slot;
 
     /**
-     * If Slot is chair, isPresiding will be TRUE, else FALSE.
+     * If Slot is chair, single justice or district judge isPresiding will be TRUE, else FALSE.
      */
     @JsonProperty("isPresiding")
     private boolean isPresiding;
