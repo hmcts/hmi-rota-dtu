@@ -8,10 +8,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import uk.gov.hmcts.reform.hmi.database.CourtListingProfileRepository;
 import uk.gov.hmcts.reform.hmi.database.JusticeRepository;
+import uk.gov.hmcts.reform.hmi.database.LocationRepository;
 import uk.gov.hmcts.reform.hmi.database.ScheduleRepository;
+import uk.gov.hmcts.reform.hmi.database.VenueRepository;
 import uk.gov.hmcts.reform.hmi.models.CourtListingProfile;
 import uk.gov.hmcts.reform.hmi.models.Justice;
 import uk.gov.hmcts.reform.hmi.models.Schedule;
+import uk.gov.hmcts.reform.hmi.models.Venue;
 import uk.gov.hmcts.reform.hmi.models.external.HmiJsonRequest;
 import uk.gov.hmcts.reform.hmi.models.external.Judge;
 import uk.gov.hmcts.reform.hmi.models.external.Location;
@@ -35,15 +38,22 @@ public class ConversionService {
 
     private final CourtListingProfileRepository courtListingProfileRepository;
 
+    private final LocationRepository locationRepository;
+
+    private final VenueRepository venueRepository;
+
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     private static final String EXCEPTION_MESSAGE = "Issue converting model to json";
 
     public ConversionService(ScheduleRepository scheduleRepository, JusticeRepository justiceRepository,
-                             CourtListingProfileRepository courtListingProfileRepository) {
+                             CourtListingProfileRepository courtListingProfileRepository,
+                             LocationRepository locationRepository, VenueRepository venueRepository) {
         this.scheduleRepository = scheduleRepository;
         this.justiceRepository = justiceRepository;
         this.courtListingProfileRepository = courtListingProfileRepository;
+        this.locationRepository = locationRepository;
+        this.venueRepository = venueRepository;
     }
 
     public JsonNode convertXmlToJson(byte[] rotaXml) {
@@ -104,10 +114,26 @@ public class ConversionService {
 
     private Location formatLocation(CourtListingProfile courtListingProfile, boolean isRoom) {
         if (isRoom) {
-            return new Location(courtListingProfile.getVenueId(), LocationType.ROOM.label);
+            Optional<Venue> optionalVenue =
+                venueRepository.findById(Integer.parseInt(courtListingProfile.getVenueId()));
+            if (optionalVenue.isPresent()) {
+                return new Location(optionalVenue.get().getName(), LocationType.ROOM.label);
+            } else {
+                log.error("Error getting venue name from venue id within court listing profile.");
+            }
         }
 
-        return new Location(courtListingProfile.getLocationId(), LocationType.COURT.label);
+        locationRepository.findById(Integer.parseInt(courtListingProfile.getLocationId()));
+
+        Optional<uk.gov.hmcts.reform.hmi.models.Location> optionalLocation =
+            locationRepository.findById(Integer.parseInt(courtListingProfile.getLocationId()));
+
+        if (optionalLocation.isPresent()) {
+            return new Location(optionalLocation.get().getName(), LocationType.COURT.label);
+        } else {
+            log.error("Error getting location name from location id within court listing profile.");
+        }
+        return null;
     }
 
     private String calculateSessionStartTime(CourtListingProfile courtListingProfile) {
