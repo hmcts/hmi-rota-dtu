@@ -59,6 +59,10 @@
     <cve>CVE-2023-34034</cve>
     <cve>CVE-2023-34035</cve>
   </suppress>
+  <suppress>
+    <notes>Needing to suppress until new version of spring. An issue with Tomcat pulled in by spring in the latest version</notes>
+    <cve>CVE-2023-41080</cve>
+  </suppress>
 
   <!--End of temporary suppression section -->
 </suppressions>
