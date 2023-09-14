@@ -1,8 +1,11 @@
 package uk.gov.hmcts.reform.hmi.service;
 
 import com.azure.core.util.BinaryData;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import nl.altindag.log.LogCaptor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -63,6 +66,36 @@ class ConversionServiceTest {
     private static final String COURT_LISTING_PROFILE_ID = "CS123";
     private static final String JUDGE_ID = "JOH1";
     LogCaptor logCaptor = LogCaptor.forClass(ConversionService.class);
+    List<String> uniqueClpIds = new ArrayList<>();
+    Schedule schedule = new Schedule();
+    Justice justice = new Justice();
+    CourtListingProfile courtListingProfile = new CourtListingProfile();
+
+    @BeforeEach
+    void setup() {
+        uniqueClpIds.clear();
+        uniqueClpIds.add(COURT_LISTING_PROFILE_ID);
+
+
+        schedule = new Schedule();
+        schedule.setId(SCHEDULE_ID);
+        schedule.setSlot("CHAIR");
+        schedule.setJusticeId(JUDGE_ID);
+        schedule.setCourtListingProfileId(COURT_LISTING_PROFILE_ID);
+
+        justice = new Justice();
+        justice.setId(JUDGE_ID);
+        justice.setEmail("test@test.com");
+
+        courtListingProfile = new CourtListingProfile();
+        courtListingProfile.setId(COURT_LISTING_PROFILE_ID);
+        courtListingProfile.setSession("AM");
+        courtListingProfile.setSessionDate(LocalDate.now());
+        courtListingProfile.setPanel("ADULT");
+        courtListingProfile.setBusiness("APP");
+        courtListingProfile.setLocationId("1");
+        courtListingProfile.setVenueId("1");
+    }
 
     @Test
     void testConvertXmlToJson() throws IOException {
@@ -89,32 +122,10 @@ class ConversionServiceTest {
 
     @Test
     void testCreateRequestJson() {
-        List<String> uniqueClpIds = new ArrayList<>();
-        uniqueClpIds.add(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.getUniqueClpIds()).thenReturn(uniqueClpIds);
-
-        Schedule schedule = new Schedule();
-        schedule.setId(SCHEDULE_ID);
-        schedule.setSlot("CHAIR");
-        schedule.setJusticeId(JUDGE_ID);
-        schedule.setCourtListingProfileId(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.findByCourtListingProfileId(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(List.of(schedule)));
-
-        Justice justice = new Justice();
-        justice.setId(JUDGE_ID);
-        justice.setEmail("test@test.com");
         when(justiceRepository.findById(JUDGE_ID)).thenReturn(Optional.of(justice));
-
-        CourtListingProfile courtListingProfile = new CourtListingProfile();
-        courtListingProfile.setId(COURT_LISTING_PROFILE_ID);
-        courtListingProfile.setSession("AM");
-        courtListingProfile.setSessionDate(LocalDate.now());
-        courtListingProfile.setPanel("ADULT");
-        courtListingProfile.setBusiness("APP");
-        courtListingProfile.setLocationId("1");
-        courtListingProfile.setVenueId("1");
-
         when(courtListingProfileRepository.findById(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(courtListingProfile));
 
@@ -129,37 +140,27 @@ class ConversionServiceTest {
         when(locationRepository.findById(1)).thenReturn(Optional.of(location));
 
         Map<String, String> requestsJson = conversionService.createRequestJson();
+        requestsJson.forEach((k,v) -> {
+            try {
+                JsonNode node = new ObjectMapper().readTree(v);
+                if (!node.isEmpty()) {
+                    assertEquals("Test location name Test venue name",
+                                 node.get("session").get("room").get("locationId").asText(),
+                                 EXPECTED_MESSAGE);
+                }
+            } catch (JsonProcessingException e) {
+                return;
+            }
+        });
         assertFalse(requestsJson.isEmpty(), EXPECTED_MESSAGE);
     }
 
     @Test
     void testCreateRequestJsonEmptyVenue() {
-        List<String> uniqueClpIds = new ArrayList<>();
-        uniqueClpIds.add(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.getUniqueClpIds()).thenReturn(uniqueClpIds);
-
-        Schedule schedule = new Schedule();
-        schedule.setId(SCHEDULE_ID);
-        schedule.setSlot("CHAIR");
-        schedule.setJusticeId(JUDGE_ID);
-        schedule.setCourtListingProfileId(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.findByCourtListingProfileId(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(List.of(schedule)));
-
-        Justice justice = new Justice();
-        justice.setId(JUDGE_ID);
-        justice.setEmail("test@test.com");
         when(justiceRepository.findById(JUDGE_ID)).thenReturn(Optional.of(justice));
-
-        CourtListingProfile courtListingProfile = new CourtListingProfile();
-        courtListingProfile.setId(COURT_LISTING_PROFILE_ID);
-        courtListingProfile.setSession("AM");
-        courtListingProfile.setSessionDate(LocalDate.now());
-        courtListingProfile.setPanel("ADULT");
-        courtListingProfile.setBusiness("APP");
-        courtListingProfile.setLocationId("1");
-        courtListingProfile.setVenueId("1");
-
         when(courtListingProfileRepository.findById(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(courtListingProfile));
 
@@ -180,32 +181,10 @@ class ConversionServiceTest {
 
     @Test
     void testCreateRequestJsonEmptyLocation() {
-        List<String> uniqueClpIds = new ArrayList<>();
-        uniqueClpIds.add(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.getUniqueClpIds()).thenReturn(uniqueClpIds);
-
-        Schedule schedule = new Schedule();
-        schedule.setId(SCHEDULE_ID);
-        schedule.setSlot("CHAIR");
-        schedule.setJusticeId(JUDGE_ID);
-        schedule.setCourtListingProfileId(COURT_LISTING_PROFILE_ID);
         when(scheduleRepository.findByCourtListingProfileId(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(List.of(schedule)));
-
-        Justice justice = new Justice();
-        justice.setId(JUDGE_ID);
-        justice.setEmail("test@test.com");
         when(justiceRepository.findById(JUDGE_ID)).thenReturn(Optional.of(justice));
-
-        CourtListingProfile courtListingProfile = new CourtListingProfile();
-        courtListingProfile.setId(COURT_LISTING_PROFILE_ID);
-        courtListingProfile.setSession("AM");
-        courtListingProfile.setSessionDate(LocalDate.now());
-        courtListingProfile.setPanel("ADULT");
-        courtListingProfile.setBusiness("APP");
-        courtListingProfile.setLocationId("1");
-        courtListingProfile.setVenueId("1");
-
         when(courtListingProfileRepository.findById(COURT_LISTING_PROFILE_ID))
             .thenReturn(Optional.of(courtListingProfile));
 

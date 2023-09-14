@@ -113,26 +113,35 @@ public class ConversionService {
     }
 
     private Location formatLocation(CourtListingProfile courtListingProfile, boolean isRoom) {
+        Optional<uk.gov.hmcts.reform.hmi.models.Location> optionalLocation =
+            locationRepository.findById(Integer.parseInt(courtListingProfile.getLocationId()));
+        String locationName = "";
+        if (optionalLocation.isPresent()) {
+            locationName = optionalLocation.get().getName();
+        }
+
         if (isRoom) {
             Optional<Venue> optionalVenue =
                 venueRepository.findById(Integer.parseInt(courtListingProfile.getVenueId()));
+            String roomName = "";
             if (optionalVenue.isPresent()) {
-                return new Location(optionalVenue.get().getName(), LocationType.ROOM.label);
-            } else {
+                roomName = String.format("%s %s", locationName,
+                                         optionalVenue.get().getName());
+            }
+
+            if (roomName.isEmpty()) {
                 log.error("Error getting venue name from venue id within court listing profile.");
+            } else {
+                return new Location(roomName, LocationType.ROOM.label);
             }
         }
 
-        locationRepository.findById(Integer.parseInt(courtListingProfile.getLocationId()));
-
-        Optional<uk.gov.hmcts.reform.hmi.models.Location> optionalLocation =
-            locationRepository.findById(Integer.parseInt(courtListingProfile.getLocationId()));
-
-        if (optionalLocation.isPresent()) {
-            return new Location(optionalLocation.get().getName(), LocationType.COURT.label);
-        } else {
+        if (locationName.isEmpty()) {
             log.error("Error getting location name from location id within court listing profile.");
+        } else {
+            return new Location(locationName, LocationType.COURT.label);
         }
+
         return null;
     }
 
