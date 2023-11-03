@@ -1,0 +1,2 @@
+service-to-service:
+  hmi-apim: http://localhost:1234

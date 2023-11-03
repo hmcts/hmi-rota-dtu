@@ -223,6 +223,8 @@ dependencies {
   testImplementation group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '4.11.0'
   testImplementation group: 'io.github.hakky54', name: 'logcaptor', version: '2.9.0'
   testImplementation group: 'org.mockito', name: 'mockito-inline', version: '5.2.0'
+  testImplementation group: 'org.testcontainers', name: 'testcontainers', version: '1.19.1'
+  testImplementation group: 'com.ginsberg', name: 'junit5-system-exit', version: '1.1.2'
 }
 
 mainClassName = 'uk.gov.hmcts.reform.hmi.Application'
@@ -237,6 +239,11 @@ bootJar {
 
 // Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
 rootProject.tasks.named("processSmokeTestResources") {
+  duplicatesStrategy = 'include'
+}
+
+// Gradle 7.x issue, workaround from: https://github.com/gradle/gradle/issues/17236#issuecomment-894768083
+rootProject.tasks.named("processFunctionalTestResources") {
   duplicatesStrategy = 'include'
 }
 
