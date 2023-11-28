@@ -79,6 +79,9 @@
     <cve>CVE-2023-36414</cve>
     <cve>CVE-2023-36415</cve>
   </suppress>
-
+  <suppress>
+    <notes>Suppression for azure deps. Pulled in by azure-bom latest version</notes>
+    <cve>CVE-2023-36052</cve>
+  </suppress>
   <!--End of temporary suppression section -->
 </suppressions>
