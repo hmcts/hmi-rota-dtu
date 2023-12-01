@@ -28,7 +28,7 @@ spring:
               - ${HMI_APIM_AZ_API}/.default
 
   config:
-    import: "optional:configtree:/mnt/secrets/hmi-kv/"
+    import: "optional:configtree:/mnt/secrets/hmi-sds-kv/"
   application:
     name: HMI Rota DTU
   datasource:
