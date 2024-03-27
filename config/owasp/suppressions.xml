@@ -68,6 +68,7 @@
     <cve>CVE-2023-44487</cve>
     <cve>CVE-2023-45648</cve>
     <cve>CVE-2023-42795</cve>
+    <cve>CVE-2023-46589</cve>
   </suppress>
   <suppress>
     <notes>Suppression for netty. Pulled in by springboot on latest version</notes>
@@ -82,6 +83,16 @@
   <suppress>
     <notes>Suppression for azure deps. Pulled in by azure-bom latest version</notes>
     <cve>CVE-2023-36052</cve>
+  </suppress>
+  <suppress>
+    <notes>Suppression for springframework. Pulled in by springframework on latest version</notes>
+    <cve>CVE-2023-34053</cve>
+    <cve>CVE-2023-34055</cve>
+    <cve>CVE-2023-34042</cve>
+  </suppress>
+  <suppress>
+    <notes>Suppression for logback deps.</notes>
+    <cve>CVE-2023-6378</cve>
   </suppress>
   <!--End of temporary suppression section -->
 </suppressions>
